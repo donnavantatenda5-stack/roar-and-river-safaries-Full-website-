@@ -25,6 +25,14 @@ export type TourDetail = {
   includes?: string[];
   /** Highlighted warning box, e.g. passport and visa requirements. */
   important?: string;
+  /** Fees payable on top of the listed price, e.g. "$12.00 per person". */
+  governmentFees?: string;
+  /** How guests get to the start of the tour. */
+  pickup?: string;
+  /** Where the tour finishes. Defaults to "back at the meeting point". */
+  endPoint?: string;
+  /** Practical notes: accessibility, capacity, confirmation. */
+  notes?: string[];
 };
 
 export const TOUR_DETAILS: Record<string, TourDetail> = {
@@ -76,21 +84,37 @@ export const TOUR_DETAILS: Record<string, TourDetail> = {
   },
 
   "zambezi-sunset-cruise": {
-    summary: "Sundowner cruise on the Zambezi as the sun drops behind the Falls.",
-    startTime: "17:00 daily",
+    summary: "Sunset cruise on the Zambezi: canapes, drinks and African wildlife as the sun goes down.",
+    startTime: "3:30 pm",
     duration: "2.5 hours",
     minPax: "",
-    location: "Victoria Falls jetty",
+    location: "A'zambezi River Lodge, 308 Parkway Drive, Victoria Falls",
+    governmentFees: "$12.00 per person",
+    pickup:
+      "We pick up from any hotel or lodge in Victoria Falls, Zimbabwe. You can also head directly to the meeting point and wait for the boat.",
+    endPoint: "Go to the Batoka jetty. This activity ends back at the meeting point.",
     body: [
-      "There is no better way to end the day in Victoria Falls than on the Zambezi. The sunset cruise takes you out onto the river as the light changes over the Falls, with drinks and snacks served on board.",
-      "Look out for hippos and crocodiles along the banks, and elephant herds that regularly come down to the water at dusk to drink.",
-      "Photographers get the classic shot of the Falls in golden light, and the calm stretch of river below the Falls is a different, gentler side of Mosi-oa-Tunya.",
+      "There is no better way to end the day in Victoria Falls than on the Zambezi. This evening cruise takes you out onto the river from the Batoka jetty as the light changes over the Falls, with canapes and drinks served on deck.",
+      "Look out for hippos, crocodiles and a rich variety of bird species along the banks, and elephant herds that regularly come down to the water at dusk to drink.",
+      "Photographers get the classic shot of the golden reflections on the water, the lush riverine landscape and the silhouettes of trees against the setting sun.",
     ],
     includes: [
-      "Two and a half hours on the river",
-      "Snacks and a selection of drinks",
-      "Sunset over the Falls",
+      "Sunset cruise on the Zambezi River",
+      "Selection of canapes",
+      "Wines, local beers, spirits and soft drinks",
+      "Hotel or lodge pickup and drop off in Victoria Falls",
     ],
+    notes: [
+      "Confirmation is received at the time of booking",
+      "Not wheelchair accessible",
+      "Service animals allowed",
+      "Near public transportation",
+      "Infants must sit on laps",
+      "Most travellers can participate",
+      "Maximum of 90 travellers",
+    ],
+    important:
+      "Government fees of $12.00 per person are payable separately and are not included in the listed price.",
   },
 
   "devils-pool-angels-pool": {

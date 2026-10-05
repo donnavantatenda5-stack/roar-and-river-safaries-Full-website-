@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, Info } from "lucide-react";
+import { ArrowLeft, Check, Flag, Info, MapPin } from "lucide-react";
 import Container from "@/components/ui/Container";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -125,6 +125,50 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                     </Reveal>
                   )}
 
+                  {(detail.pickup || detail.endPoint) && (
+                    <Reveal className="mt-14">
+                      <h2 className="font-serif text-[clamp(1.5rem,2.6vw,2rem)] font-bold text-forest">
+                        Meeting and pickup
+                      </h2>
+                      <div className="mt-7 grid gap-4 sm:grid-cols-2">
+                        {detail.pickup && (
+                          <div className="rounded-[16px] border border-line bg-white px-6 py-5">
+                            <p className="flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.22em] text-gold-dark">
+                              <MapPin className="h-4 w-4" strokeWidth={2.4} />
+                              Pickup details
+                            </p>
+                            <p className="mt-3 text-[16px] leading-[1.7] text-muted">{detail.pickup}</p>
+                          </div>
+                        )}
+                        {detail.endPoint && (
+                          <div className="rounded-[16px] border border-line bg-white px-6 py-5">
+                            <p className="flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.22em] text-gold-dark">
+                              <Flag className="h-4 w-4" strokeWidth={2.4} />
+                              End point
+                            </p>
+                            <p className="mt-3 text-[16px] leading-[1.7] text-muted">{detail.endPoint}</p>
+                          </div>
+                        )}
+                      </div>
+                    </Reveal>
+                  )}
+
+                  {detail.notes && detail.notes.length > 0 && (
+                    <Reveal className="mt-14">
+                      <h2 className="font-serif text-[clamp(1.5rem,2.6vw,2rem)] font-bold text-forest">
+                        Additional info
+                      </h2>
+                      <ul className="mt-7 space-y-3">
+                        {detail.notes.map((n) => (
+                          <li key={n} className="flex items-start gap-3 text-[16px] leading-relaxed text-muted sm:text-[17px]">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rotate-45 bg-gold" aria-hidden="true" />
+                            {n}
+                          </li>
+                        ))}
+                      </ul>
+                    </Reveal>
+                  )}
+
                   {detail.important && (
                     <Reveal className="mt-14">
                       <div className="rounded-[18px] border-l-4 border-gold bg-cream px-7 py-6">
@@ -160,7 +204,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
             </div>
 
             <div className="lg:sticky lg:top-32 lg:self-start">
-              <TourBookingCard tour={tour} title={name} />
+              <TourBookingCard tour={tour} title={name} governmentFees={detail?.governmentFees} />
             </div>
           </div>
         </Container>

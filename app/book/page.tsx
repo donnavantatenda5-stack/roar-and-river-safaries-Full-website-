@@ -117,6 +117,13 @@ export default async function BookPage({
                             </div>
                           )}
 
+                          {detail.governmentFees && (
+                            <p className="mt-7 rounded-[14px] border-l-4 border-gold bg-cream px-5 py-4 text-[15px] leading-snug text-muted">
+                              <span className="font-bold text-forest">Government fees</span>{" "}
+                              {detail.governmentFees}, payable separately.
+                            </p>
+                          )}
+
                           {detail.includes && detail.includes.length > 0 && (
                             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
                               {detail.includes.map((item) => (

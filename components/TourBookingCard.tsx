@@ -3,7 +3,15 @@ import { formatPrice } from "@/lib/types";
 import { whatsappHref } from "@/lib/site";
 
 /** Sticky sidebar on a tour detail page: price and the ways to book. */
-export default function TourBookingCard({ tour, title }: { tour: Tour; title: string }) {
+export default function TourBookingCard({
+  tour,
+  title,
+  governmentFees,
+}: {
+  tour: Tour;
+  title: string;
+  governmentFees?: string;
+}) {
   const wa = whatsappHref(`Hi! I'd like to book the ${title} with Roar and River Safaris.`);
 
   return (
@@ -17,6 +25,13 @@ export default function TourBookingCard({ tour, title }: { tour: Tour; title: st
           <span className="text-[17px] text-[#bed0bd]">per person</span>
         )}
       </p>
+
+      {governmentFees && (
+        <p className="mt-4 rounded-xl bg-[#1c3a28] px-4 py-3 text-[15px] leading-snug text-[#d6e2d6]">
+          <span className="font-bold text-sand">Government fees</span> {governmentFees}, payable
+          separately.
+        </p>
+      )}
 
       <a
         href={`/book?tour=${tour.slug}`}
