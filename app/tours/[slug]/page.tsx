@@ -8,7 +8,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import TourFacts from "@/components/TourFacts";
 import TourBookingCard from "@/components/TourBookingCard";
 import ButtonLink from "@/components/ui/ButtonLink";
-import { getTour, getTours, tourImage, SHORT_NAMES } from "@/lib/tours";
+import { getTour, getAllTours, tourImage, SHORT_NAMES } from "@/lib/tours";
 import { tourDetail, tourIntro } from "@/lib/tourDetails";
 import { formatPrice } from "@/lib/types";
 
@@ -30,8 +30,8 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
   if (!tour) notFound();
 
   const detail = tourDetail(tour.slug);
-  const tours = await getTours();
-  const others = tours.filter((t) => t.slug !== tour.slug).slice(0, 3);
+  const all = await getAllTours();
+  const others = all.filter((t) => t.slug !== tour.slug).slice(0, 3);
   const name = SHORT_NAMES[tour.slug] ?? tour.name;
 
   return (
@@ -204,7 +204,12 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
             </div>
 
             <div className="lg:sticky lg:top-32 lg:self-start">
-              <TourBookingCard tour={tour} title={name} governmentFees={detail?.governmentFees} />
+              <TourBookingCard
+              tour={tour}
+              title={name}
+              governmentFees={detail?.governmentFees}
+              priceNote={detail?.priceNote}
+            />
             </div>
           </div>
         </Container>
@@ -247,7 +252,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
 
 <Reveal className="mt-14 flex justify-center">
             <ButtonLink href="/#tours" variant="outline" arrow={false} className="!border-forest !text-forest hover:!bg-forest/5">
-              See all {tours.length} tours
+              See all {all.length} tours and activities
             </ButtonLink>
           </Reveal>
           </Container>

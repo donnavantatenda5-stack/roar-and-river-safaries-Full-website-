@@ -2,10 +2,12 @@ import Image from "next/image";
 import { ArrowDown } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import ButtonLink from "@/components/ui/ButtonLink";
+import HeroVideoBackground from "@/components/HeroVideoBackground";
 
 export default function Hero() {
   return (
-    <section id="home" className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden">
+    <section id="home" className="relative isolate flex h-[100svh] min-h-[640px] items-center justify-center overflow-hidden">
+      {/* Poster behind the video, and the fallback if the player can't load. */}
       <Image
         src="/images/hero.jpg"
         alt="Aerial view of Victoria Falls with a rainbow over the Zambezi River"
@@ -13,10 +15,11 @@ export default function Hero() {
         priority
         quality={85}
         sizes="100vw"
-        className="-z-20 object-cover object-[50%_30%]"
+        className="-z-30 object-cover object-[50%_30%]"
       />
-      {/* Dark green scrim so the white text stays readable */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-forest/30 via-forest/55 to-forest/60" />
+      <HeroVideoBackground />
+      {/* Dark green scrim so the white text stays readable over moving footage */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-forest/40 via-forest/60 to-forest/65" />
 
       <div className="mx-auto flex max-w-[1160px] flex-col items-center px-6 pb-28 pt-36 text-center">
         <Reveal>

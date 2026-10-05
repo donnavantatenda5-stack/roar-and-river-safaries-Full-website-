@@ -21,7 +21,7 @@ export default function Navbar() {
       <div className="relative w-full max-w-fit">
         <nav
           aria-label="Main"
-          className="flex items-center justify-between gap-4 rounded-full bg-white/95 py-2.5 pl-6 pr-3 shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur md:gap-0 md:pl-10 md:pr-3.5"
+          className="flex items-center justify-between gap-4 rounded-full border-0 bg-white py-2.5 pl-6 pr-3 shadow-[0_10px_30px_rgba(0,0,0,0.18)] md:gap-0 md:pl-10 md:pr-3.5"
         >
           <Link href="/" aria-label="Roar and River Safaris - home" className="shrink-0">
             <Image
@@ -43,8 +43,8 @@ export default function Navbar() {
                   href={l.href}
                   className={
                     i === 0
-                      ? "font-bold text-forest"
-                      : "text-[#5c625f] transition-colors hover:text-forest"
+                      ? "border-0 font-bold text-forest"
+                      : "border-0 text-[#5c625f] transition-colors hover:text-forest"
                   }
                 >
                   {l.label}

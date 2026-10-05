@@ -55,8 +55,14 @@ insert into public.tours (slug, name, price_usd, sort_order) values
   ('chobe-day-trip-botswana',         'Chobe Day Trip (Botswana)',           229,  3),
   ('devils-pool-angels-pool',         'Devil''s Pool / Angel''s Pool',       120,  4),
   ('zambezi-national-park-game-drive','Zambezi National Park Game Drive',    80,   5),
-  ('bungee-jumping-gorge-swing',      'Bungee Jumping & Gorge Swing',        null, 6)
+  ('bungee-jumping',                 'Victoria Falls Bungee Jump',          194,  6),
+  ('gorge-swing',                    'Victoria Falls Bridge Swing',         137,  7),
+  ('bridge-zipline',                 'Victoria Falls Bridge Zipline',        58,  8)
 on conflict (slug) do nothing;
+
+-- Bungee and gorge swing used to be one combined tour. Hide the old row so
+-- existing bookmarks stop working but the bookings that reference it survive:
+update public.tours set is_active = false where slug = 'bungee-jumping-gorge-swing';
 
 -- Chobe is priced per person. The figure above is the full price, so update it
 -- directly if you ever change it: update public.tours set price_usd = 229

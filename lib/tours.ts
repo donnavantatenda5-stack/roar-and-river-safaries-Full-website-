@@ -1,4 +1,5 @@
 import type { Tour } from "@/lib/types";
+import { ACTIVITIES, getActivity } from "@/lib/activities";
 
 /** Shown if Supabase isn't configured yet or can't be reached. */
 export const FALLBACK_TOURS: Tour[] = [
@@ -7,7 +8,9 @@ export const FALLBACK_TOURS: Tour[] = [
   { slug: "chobe-day-trip-botswana", name: "Chobe Day Trip (Botswana)", price_usd: 229 },
   { slug: "devils-pool-angels-pool", name: "Devil's Pool / Angel's Pool", price_usd: 120 },
   { slug: "zambezi-national-park-game-drive", name: "Zambezi National Park Game Drive", price_usd: 80 },
-  { slug: "bungee-jumping-gorge-swing", name: "Bungee Jumping & Gorge Swing", price_usd: null },
+  { slug: "bungee-jumping", name: "Victoria Falls Bungee Jump", price_usd: 194 },
+  { slug: "gorge-swing", name: "Victoria Falls Bridge Swing", price_usd: 137 },
+  { slug: "bridge-zipline", name: "Victoria Falls Bridge Zipline", price_usd: 58 },
 ].map((t, i) => ({
   id: t.slug,
   description: null,
@@ -24,7 +27,9 @@ export const SHORT_NAMES: Record<string, string> = {
   "chobe-day-trip-botswana": "Chobe Day Trip",
   "devils-pool-angels-pool": "Devil's / Angel's Pool",
   "zambezi-national-park-game-drive": "Game Drive",
-  "bungee-jumping-gorge-swing": "Bungee & Gorge Swing",
+  "bungee-jumping": "Bungee Jumping",
+  "gorge-swing": "Bridge Swing",
+  "bridge-zipline": "Bridge Zipline",
 };
 
 /** Image for a tour: the database value if set, otherwise /public/images/tours/<slug>.jpg */
@@ -32,12 +37,15 @@ export function tourImage(t: Tour): string {
   return t.image_url ?? `/images/tours/${t.slug}.jpg`;
 }
 
-/** A single tour by slug, or undefined if it doesn't exist or is inactive. */
+/** A single tour by slug, checking tours first so activities can never shadow one. */
 export async function getTour(slug: string): Promise<Tour | undefined> {
   const tours = await getTours();
-  return tours.find((t) => t.slug === slug);
+  const tour = tours.find((t) => t.slug === slug);
+  if (tour) return tour;
+  return getActivity(slug);
 }
 
+/** The eight signature tours. Kept separate from the wider activity catalog. */
 export async function getTours(): Promise<Tour[]> {
   try {
     // Imported lazily so a missing .env.local falls back instead of crashing the page.
@@ -52,4 +60,15 @@ export async function getTours(): Promise<Tour[]> {
   } catch {
     return FALLBACK_TOURS;
   }
+}
+
+/** The wider activity catalog, shown in its own section below the tours. */
+export async function getActivities() {
+  return ACTIVITIES;
+}
+
+/** Tours and activities together, used where a full count or list is needed. */
+export async function getAllTours(): Promise<Tour[]> {
+  const tours = await getTours();
+  return [...tours, ...ACTIVITIES];
 }

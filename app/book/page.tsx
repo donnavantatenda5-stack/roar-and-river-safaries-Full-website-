@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import TourFacts from "@/components/TourFacts";
 import BookingForm from "@/components/BookingForm";
 import { tourDetail, tourIntro } from "@/lib/tourDetails";
-import { getTours, tourImage } from "@/lib/tours";
+import { getAllTours, tourImage } from "@/lib/tours";
 import { formatPrice } from "@/lib/types";
 
 export const metadata = {
@@ -24,9 +24,10 @@ export default async function BookPage({
 }) {
   const { tour: tourSlug } = await searchParams;
 
-  // getTours falls back to the built-in list when Supabase isn't reachable,
+  // getAllTours falls back to the built-in list when Supabase isn't reachable,
   // so the form and the tour summary still work before the DB is wired up.
-  const tours = await getTours();
+  // Includes activities so any card on /tours can be booked from here.
+  const tours = await getAllTours();
   const selected = tourSlug ? tours.find((t) => t.slug === tourSlug) : undefined;
   const defaultTourId = selected?.id;
   const detail = selected ? tourDetail(selected.slug) : undefined;
@@ -115,6 +116,10 @@ export default async function BookPage({
                                 </p>
                               ))}
                             </div>
+                          )}
+
+                          {detail.priceNote && (
+                            <p className="mt-4 text-[15px] leading-snug text-muted">{detail.priceNote}</p>
                           )}
 
                           {detail.governmentFees && (
