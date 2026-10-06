@@ -101,6 +101,7 @@ export default async function BookPage({
                         <>
                           <div className="mt-8">
                             <TourFacts
+                              columns={2}
                               startTime={detail.startTime}
                               duration={detail.duration}
                               minPax={detail.minPax}
