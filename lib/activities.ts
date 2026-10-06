@@ -21,6 +21,44 @@ const IMAGE: Record<ActivityCategory, string> = {
 };
 
 /**
+ * Per-activity photos in /public/images/activities/<slug>.jpg.
+ * Activities without one fall back to their category image above.
+ */
+const ACTIVITY_IMAGE: Record<string, string> = {
+  "white-water-rafting": "/images/activities/white-water-rafting.jpg",
+  "adventure-jet-boat": "/images/activities/adventure-jet-boat.jpg",
+  "river-boarding": "/images/activities/river-boarding.jpg",
+  "flying-fox": "/images/activities/flying-fox.jpg",
+  "canopy-tour": "/images/activities/canopy-tour.jpg",
+  "upper-zambezi-canoeing": "/images/activities/upper-zambezi-canoeing.jpg",
+  "overnight-canoe-safari": "/images/activities/overnight-canoe-safari.jpg",
+  "siduli-hide": "/images/activities/siduli-hide.jpg",
+  "rhino-game-drive-dinner": "/images/activities/rhino-game-drive-dinner.jpg",
+  "elephant-encounter": "/images/activities/elephant-encounter.jpg",
+  "zambezi-fishing": "/images/activities/zambezi-fishing.jpg",
+  "horseback-safari": "/images/activities/horseback-safari.jpg",
+  "walking-safari": "/images/activities/walking-safari.jpg",
+  "lion-encounter": "/images/activities/lion-encounter.jpg",
+  "helicopter-flight": "/images/activities/helicopter-flight.jpg",
+  "microlight-flight": "/images/activities/microlight-flight.jpg",
+  "river-safari": "/images/activities/river-safari.jpg",
+  "sunset-dinner-cruise": "/images/activities/sunset-dinner-cruise.jpg",
+  "zambezi-explorer-cruise": "/images/activities/zambezi-explorer-cruise.jpg",
+  "ra-ikane-cruise": "/images/activities/ra-ikane-cruise.jpg",
+  "historic-bridge-tour": "/images/activities/historic-bridge-tour.jpg",
+  "steam-train-trip": "/images/activities/steam-train-trip.webp",
+  "victoria-falls-tram": "/images/activities/victoria-falls-tram.jpg",
+  "livingstone-island-tour": "/images/activities/livingstone-island-tour.jpg",
+  "crocodile-farm": "/images/activities/crocodile-farm.jpg",
+  "lunar-rainbow-tour": "/images/activities/lunar-rainbow-tour.jpg",
+  "bike-tour": "/images/activities/bike-tour.jpg",
+  "boma-dinner": "/images/activities/boma-dinner.jpg",
+  "dusty-road-experience": "/images/activities/dusty-road-experience.jpg",
+  "traditional-village-tour": "/images/activities/traditional-village-tour.jpg",
+  "simunye-theatre": "/images/activities/simunye-theatre.jpg",
+};
+
+/**
  * The wider activity catalog.
  *
  * These are deliberately kept separate from the eight core tours in
@@ -85,7 +123,7 @@ export const ACTIVITIES: Activity[] = RAW.map((a, i) => ({
   price_usd: a.price,
   category: a.category,
   description: null,
-  image_url: IMAGE[a.category],
+  image_url: ACTIVITY_IMAGE[a.slug] ?? IMAGE[a.category],
   sort_order: i + 1,
   is_active: true,
 }));
