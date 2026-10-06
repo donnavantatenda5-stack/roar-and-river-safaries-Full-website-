@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lato, Lora } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import SandCanvas from "@/components/SandCanvas";
 
 /*
  * Fonts. Lato + Lora match the design mockup most closely.
@@ -34,8 +35,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${body.variable} ${heading.variable}`}>
       <body className="font-sans antialiased">
-        <Navbar />
-        {children}
+        <SandCanvas />
+        <div className="relative z-[1]">
+          <Navbar />
+          {children}
+        </div>
       </body>
     </html>
   );

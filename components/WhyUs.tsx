@@ -11,7 +11,7 @@ const reasons = [
 
 export default function WhyUs() {
   return (
-    <section id="about" className="bg-ivory py-20 sm:py-[100px]">
+    <section id="about" className="bg-ivory/[0.92] py-20 sm:py-[100px]">
       <Container>
         <SectionHeading title="Why Roar and River Safaris" underline />
         <div className="mt-16 grid gap-14 md:grid-cols-3 md:gap-[60px]">

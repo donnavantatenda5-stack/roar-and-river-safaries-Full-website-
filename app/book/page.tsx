@@ -34,7 +34,7 @@ export default async function BookPage({
   const intro = selected ? tourIntro(selected, detail) : "";
 
   return (
-    <main className="min-h-screen bg-ivory pb-20 pt-36">
+    <main className="min-h-screen bg-ivory/[0.92] pb-20 pt-36">
       <Container>
         <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-[#B08D4F]">
           Simple booking

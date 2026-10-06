@@ -26,7 +26,7 @@ export default async function ToursIndexPage() {
   })).filter((g) => g.items.length > 0);
 
   return (
-    <main className="min-h-screen bg-ivory pb-24 pt-40">
+    <main className="min-h-screen bg-ivory/[0.92] pb-24 pt-40">
       <Container>
         <div className="text-center">
           <p className="text-[13px] font-bold uppercase tracking-[0.32em] text-gold">Tours &amp; experiences</p>

@@ -35,7 +35,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
   const name = SHORT_NAMES[tour.slug] ?? tour.name;
 
   return (
-    <main className="bg-ivory pt-28">
+    <main className="bg-ivory/[0.92] pt-28">
       {/* Hero */}
       <section className="relative isolate flex min-h-[62svh] items-end overflow-hidden">
         <Image
@@ -73,7 +73,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
 
       {/* At a glance */}
       {detail && (
-        <section className="border-b border-line bg-white py-14">
+        <section className="border-b border-line bg-white/[0.92] py-14">
           <Container>
             <Reveal>
               <TourFacts
@@ -217,7 +217,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
 
       {/* Other tours */}
       {others.length > 0 && (
-        <section className="bg-white py-20">
+        <section className="bg-white/[0.92] py-20">
           <Container>
             <SectionHeading eyebrow="Keep exploring" title="Other tours" underline />
             <div className="mt-14 grid gap-6 md:grid-cols-3">

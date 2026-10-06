@@ -13,7 +13,7 @@ const steps = [
 export default function HowToBook() {
   const href = whatsappHref();
   return (
-    <section id="how-to-book" className="bg-white py-20 sm:py-[84px]">
+    <section id="how-to-book" className="bg-white/[0.92] py-20 sm:py-[84px]">
       <Container>
         <SectionHeading eyebrow="Simple booking" title="How to book" underline />
 

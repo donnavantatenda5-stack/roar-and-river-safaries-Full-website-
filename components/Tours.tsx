@@ -11,7 +11,7 @@ import { formatPrice, type Tour } from "@/lib/types";
 
 export default function Tours({ tours }: { tours: Tour[] }) {
   return (
-    <section id="tours" className="bg-white py-20 sm:py-[82px]">
+    <section id="tours" className="bg-white/[0.92] py-20 sm:py-[82px]">
       <Container>
         <SectionHeading eyebrow="Tours & experiences" title="Our Tours" underline />
 
