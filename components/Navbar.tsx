@@ -112,7 +112,10 @@ export default function Navbar() {
           <div className={cn("flex shrink-0 items-center gap-2", docked ? "ml-auto" : "md:ml-[46px]")}>
             <Link
               href="/book"
-              className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-forest px-6 py-3 text-[16px] font-bold text-white transition-colors hover:bg-forest-soft md:px-8 md:text-[17px]"
+              className={cn(
+                "shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-forest px-6 py-3 text-[16px] font-bold text-white transition-colors hover:bg-forest-soft md:inline-flex md:px-8 md:text-[17px]",
+                docked ? "inline-flex" : "hidden"
+              )}
             >
               Book Now
             </Link>
