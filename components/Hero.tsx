@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { ArrowDown } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import ButtonLink from "@/components/ui/ButtonLink";
 import HeroVideoBackground from "@/components/HeroVideoBackground";
@@ -21,7 +20,7 @@ export default function Hero() {
       {/* Dark green scrim so the white text stays readable over moving footage */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-forest/40 via-forest/60 to-forest/65" />
 
-      <div className="mx-auto flex max-w-[1160px] flex-col items-center px-6 pb-28 pt-36 text-center">
+      <div className="mx-auto flex max-w-[1160px] flex-col items-center px-6 pb-24 pt-44 text-center sm:pb-20 sm:pt-64">
         <Reveal>
           <span className="inline-block rounded-full bg-white/85 px-6 py-2.5 text-[11px] font-bold uppercase tracking-[0.32em] text-forest sm:text-sm">
             Victoria Falls, Zimbabwe
@@ -47,18 +46,11 @@ export default function Hero() {
           <ButtonLink href="/book" variant="light">
             Book a Safari
           </ButtonLink>
-          <ButtonLink href="/#tours" variant="outline" arrow={false}>
+          <ButtonLink href="/#tours" variant="outline">
             View Tours
           </ButtonLink>
         </Reveal>
       </div>
-
-      <a
-        href="#destinations"
-        className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 items-center gap-2 rounded-full bg-[#0c1812]/50 px-5 py-2 text-[13px] font-bold uppercase tracking-[0.3em] text-white/90 backdrop-blur-sm transition hover:bg-[#0c1812]/70 sm:flex"
-      >
-        Scroll <ArrowDown className="h-4 w-4" />
-      </a>
     </section>
   );
 }

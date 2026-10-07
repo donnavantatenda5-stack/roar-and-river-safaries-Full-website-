@@ -73,7 +73,7 @@ export default function Navbar() {
         <nav
           aria-label="Main"
           className={cn(
-            "flex items-center justify-between gap-4 bg-white py-2.5 pl-6 pr-3 md:gap-0 md:pl-10 md:pr-3.5 motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "flex items-center justify-between gap-4 paper-surface py-2.5 pl-6 pr-3 md:gap-0 md:pl-10 md:pr-3.5 motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
             docked
               ? "rounded-none shadow-[0_8px_28px_rgba(12,24,18,0.12)]"
               : "rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.18)]"
@@ -131,7 +131,7 @@ export default function Navbar() {
         {open && (
           <div
             className={cn(
-              "absolute inset-x-0 top-full bg-white p-4 shadow-[0_16px_40px_rgba(0,0,0,0.22)] md:hidden",
+              "absolute inset-x-0 top-full paper-surface p-4 shadow-[0_16px_40px_rgba(0,0,0,0.22)] md:hidden",
               docked ? "rounded-b-3xl" : "mt-3 rounded-3xl"
             )}
           >

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/Reveal";
@@ -11,7 +10,7 @@ import { formatPrice, type Tour } from "@/lib/types";
 
 export default function Tours({ tours }: { tours: Tour[] }) {
   return (
-    <section id="tours" className="bg-white/[0.92] py-20 sm:py-[82px]">
+    <section id="tours" className="py-20 sm:py-[82px]">
       <Container>
         <SectionHeading eyebrow="Tours & experiences" title="Our Tours" underline />
 
@@ -29,9 +28,6 @@ export default function Tours({ tours }: { tours: Tour[] }) {
                       className="object-cover transition duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-forest/10 to-forest/35" />
-                    <span className="absolute left-[22px] top-[22px] flex h-[34px] w-[54px] items-center justify-center rounded-full bg-white/90 font-serif text-[17px] font-bold text-gold-dark">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
                     <Link href={`/tours/${t.slug}`} className="absolute inset-0" aria-label={`Read more about ${t.name}`} />
                   </div>
 
@@ -68,7 +64,7 @@ export default function Tours({ tours }: { tours: Tour[] }) {
                           href={`/book?tour=${t.slug}`}
                           className="inline-flex h-12 items-center gap-2.5 rounded-full bg-forest px-7 text-[17px] font-bold text-white transition-colors hover:bg-forest-soft"
                         >
-                          Book <ArrowRight className="h-[18px] w-[18px]" strokeWidth={2.2} />
+                          Book
                         </Link>
                       </span>
                     </div>

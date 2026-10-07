@@ -43,8 +43,10 @@ function particleCount(width: number, height: number): number {
 }
 
 /**
- * Fixed, full-screen grain layer sitting behind the page content.
- * Static (no animation) when the visitor prefers reduced motion.
+ * Fixed, full-screen sand layer drawn above the page backgrounds so grains
+ * read over the hero photo, the dark green bands and the light sections alike.
+ * It is inert (pointer-events: none) and the grains are 1-3px, so text stays
+ * fully readable. Static (no animation) when the visitor prefers reduced motion.
  */
 export default function SandCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -145,5 +147,11 @@ export default function SandCanvas() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-0" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-[2]"
+    />
+  );
 }

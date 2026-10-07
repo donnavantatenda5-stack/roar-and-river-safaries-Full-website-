@@ -1,6 +1,7 @@
 import Container from "@/components/ui/Container";
 import ButtonLink from "@/components/ui/ButtonLink";
 import ExpandableTourGrid from "@/components/ExpandableTourGrid";
+import Footer from "@/components/Footer";
 import { getActivities, getTours } from "@/lib/tours";
 import { ACTIVITY_CATEGORIES } from "@/lib/activities";
 
@@ -26,7 +27,8 @@ export default async function ToursIndexPage() {
   })).filter((g) => g.items.length > 0);
 
   return (
-    <main className="min-h-screen bg-ivory/[0.92] pb-24 pt-40">
+    <>
+      <main className="min-h-screen pb-24 pt-40">
       <Container>
         <div className="text-center">
           <p className="text-[13px] font-bold uppercase tracking-[0.32em] text-gold">Tours &amp; experiences</p>
@@ -70,6 +72,8 @@ export default async function ToursIndexPage() {
           <ButtonLink href="/book">Start a booking</ButtonLink>
         </div>
       </Container>
-    </main>
+      </main>
+      <Footer tours={tours} />
+    </>
   );
 }

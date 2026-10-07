@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Variant = "dark" | "light" | "outline";
@@ -14,14 +13,12 @@ export default function ButtonLink({
   href,
   children,
   variant = "dark",
-  arrow = true,
   external = false,
   className,
 }: {
   href: string;
   children: React.ReactNode;
   variant?: Variant;
-  arrow?: boolean;
   external?: boolean;
   className?: string;
 }) {
@@ -30,12 +27,7 @@ export default function ButtonLink({
     styles[variant],
     className
   );
-  const content = (
-    <>
-      {children}
-      {arrow && <ArrowRight className="h-5 w-5" strokeWidth={2.2} />}
-    </>
-  );
+  const content = <>{children}</>;
   return external ? (
     <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
       {content}

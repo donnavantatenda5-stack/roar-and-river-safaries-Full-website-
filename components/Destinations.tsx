@@ -23,7 +23,7 @@ const places = [
 
 export default function Destinations() {
   return (
-    <section id="destinations" className="bg-ivory/[0.92] py-20 sm:py-[78px]">
+    <section id="destinations" className="py-20 sm:py-[78px]">
       <Container>
         <SectionHeading
           eyebrow="Where we operate"

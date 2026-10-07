@@ -1,10 +1,21 @@
 "use server";
 
-import { Resend } from "resend";
 import { supabase } from "@/lib/supabase";
+import { isMailConfigured, sendBookingAlert } from "@/lib/mailer";
 import { bookingSchema, type BookingInput } from "@/lib/validations";
+import { getActivity } from "@/lib/activities";
 
 export type BookingResult = { ok: true } | { ok: false; error: string };
+
+async function lookupTourName(tourId: string): Promise<string> {
+  try {
+    const { data } = await supabase.from("tours").select("name").eq("id", tourId).single();
+    if (data?.name) return data.name;
+  } catch {
+    // fall through to the activity lookup below
+  }
+  return getActivity(tourId)?.name ?? "Unknown tour";
+}
 
 export async function createBooking(input: BookingInput): Promise<BookingResult> {
   const parsed = bookingSchema.safeParse(input);
@@ -27,41 +38,30 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
     message: d.message || null,
   });
 
-  if (error) {
-    console.error("Booking insert failed:", error.message);
-    return { ok: false, error: "Sorry, we couldn't save your booking. Please try again or message us on WhatsApp." };
+  if (error) console.error("Booking insert failed:", error.message);
+
+  // Alert the operator - also when the insert failed, so a booking that only
+  // lives in this email is never silently lost. Best-effort, never fails the request.
+  if (isMailConfigured()) {
+    try {
+      const result = await sendBookingAlert({
+        tourName: await lookupTourName(d.tour_id),
+        name: d.full_name,
+        email: d.email,
+        phone: d.phone,
+        travelDate: d.travel_date,
+        groupSize: d.group_size,
+        message: d.message || null,
+        dbSaved: !error,
+      });
+      if (!result.sent) console.error("Booking email not sent:", result.error);
+    } catch (e) {
+      console.error("Booking email failed:", e);
+    }
   }
 
-  // The booking is saved. The email alert is best-effort and must never fail the request.
-  try {
-    const { RESEND_API_KEY, RESEND_FROM_EMAIL, BOOKING_NOTIFY_EMAIL } = process.env;
-    if (RESEND_API_KEY && RESEND_FROM_EMAIL && BOOKING_NOTIFY_EMAIL) {
-      const { data: tour } = await supabase
-        .from("tours")
-        .select("name")
-        .eq("id", d.tour_id)
-        .single();
-      const tourName = tour?.name ?? "Unknown tour";
-
-      const resend = new Resend(RESEND_API_KEY);
-      await resend.emails.send({
-        from: RESEND_FROM_EMAIL,
-        to: BOOKING_NOTIFY_EMAIL,
-        replyTo: d.email,
-        subject: `New booking: ${tourName} - ${d.full_name}`,
-        text: [
-          `Tour: ${tourName}`,
-          `Name: ${d.full_name}`,
-          `Email: ${d.email}`,
-          `Phone / WhatsApp: ${d.phone}`,
-          `Travel date: ${d.travel_date}`,
-          `Group size: ${d.group_size}`,
-          `Message: ${d.message || "-"}`,
-        ].join("\n"),
-      });
-    }
-  } catch (e) {
-    console.error("Booking email failed:", e);
+  if (error) {
+    return { ok: false, error: "Sorry, we couldn't save your booking. Please try again or message us on WhatsApp." };
   }
 
   return { ok: true };

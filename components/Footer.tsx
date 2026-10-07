@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
+import PalmSketch from "@/components/PalmSketch";
 import { SHORT_NAMES } from "@/lib/tours";
 import { SITE, whatsappHref } from "@/lib/site";
 import type { Tour } from "@/lib/types";
@@ -21,7 +22,37 @@ export default function Footer({ tours }: { tours: Tour[] }) {
   return (
     <footer id="contact" className="bg-forest text-white">
       <Container className="pt-20">
-        <div className="grid gap-12 md:grid-cols-[1.5fr_1.1fr_0.8fr_0.8fr]">
+        {/* First thing you see when the Contact link jumps here. */}
+        <div className="border-b border-[#32483a] pb-14">
+          <p className="mb-8 text-[15px] font-bold uppercase tracking-[0.27em] text-sand">Contact us</p>
+          <div className="grid gap-8 sm:grid-cols-3">
+            <div>
+              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Email</p>
+              <a
+                href="mailto:donnavantatenda5@gmail.com"
+                className="mt-3 block break-all text-xl font-bold text-white transition-colors hover:text-sand"
+              >
+                donnavantatenda5@gmail.com
+              </a>
+            </div>
+            <div>
+              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Call</p>
+              <a href="tel:+263773473009" className="mt-3 block text-xl font-bold text-white transition-colors hover:text-sand">
+                +263 773 473 009
+              </a>
+            </div>
+            <div>
+              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Call</p>
+              <a href="tel:+263775418768" className="mt-3 block text-xl font-bold text-white transition-colors hover:text-sand">
+                +263 0775418768
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Logo + link columns sit left; the palm etching takes the right-hand side. */}
+        <div className="flex flex-col gap-14 md:flex-row md:items-start md:gap-8 lg:gap-12">
+          <div className="grid flex-1 gap-12 md:grid-cols-[1.5fr_1.1fr_0.8fr_0.8fr] md:pr-8 lg:pr-10">
           <div>
             <span className="flex h-[92px] w-[92px] items-center justify-center rounded-full bg-white">
               <Image src="/logo.png" alt="Roar and River Safaris" width={703} height={606} className="h-[58px] w-auto" />
@@ -71,6 +102,11 @@ export default function Footer({ tours }: { tours: Tour[] }) {
                 </li>
               )}
             </ul>
+          </div>
+          </div>
+
+          <div className="w-[min(70vw,300px)] shrink-0 self-end md:-mr-6 md:w-[min(30vw,340px)] md:self-start md:pt-4 lg:-mr-10">
+            <PalmSketch className="opacity-[0.6]" />
           </div>
         </div>
 

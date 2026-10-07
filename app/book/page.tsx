@@ -5,8 +5,9 @@ import Container from "@/components/ui/Container";
 import Reveal from "@/components/Reveal";
 import TourFacts from "@/components/TourFacts";
 import BookingForm from "@/components/BookingForm";
+import Footer from "@/components/Footer";
 import { tourDetail, tourIntro } from "@/lib/tourDetails";
-import { getAllTours, tourImage } from "@/lib/tours";
+import { getAllTours, getTours, tourImage } from "@/lib/tours";
 import { formatPrice } from "@/lib/types";
 
 export const metadata = {
@@ -28,13 +29,15 @@ export default async function BookPage({
   // so the form and the tour summary still work before the DB is wired up.
   // Includes activities so any card on /tours can be booked from here.
   const tours = await getAllTours();
+  const footerTours = await getTours();
   const selected = tourSlug ? tours.find((t) => t.slug === tourSlug) : undefined;
   const defaultTourId = selected?.id;
   const detail = selected ? tourDetail(selected.slug) : undefined;
   const intro = selected ? tourIntro(selected, detail) : "";
 
   return (
-    <main className="min-h-screen bg-ivory/[0.92] pb-20 pt-36">
+    <>
+      <main className="min-h-screen pb-20 pt-36">
       <Container>
         <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-[#B08D4F]">
           Simple booking
@@ -51,7 +54,7 @@ export default async function BookPage({
             Tours are unavailable right now. Please message us directly to book.
           </p>
         ) : (
-          <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_minmax(0,26rem)] lg:items-start lg:gap-12">
+          <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_minmax(0,32rem)] lg:items-start lg:gap-12">
             {/* What's being booked - read this before you fill the form in. */}
             <div>
               {selected ? (
@@ -193,6 +196,8 @@ export default async function BookPage({
           </div>
         )}
       </Container>
-    </main>
+      </main>
+      <Footer tours={footerTours} />
+    </>
   );
 }
