@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -11,14 +11,25 @@ const links = [
   { label: "Tours", href: "/tours" },
   { label: "About", href: "/#about" },
   { label: "Gallery", href: "/#destinations" },
-  { label: "Contact", href: "/#contact" },
 ];
+
+const CONTACT_EMAIL = "donnavantatenda5@gmail.com";
+const CONTACT_NUMBERS = [
+  { display: "+263 773 473 009", tel: "+263773473009", wa: "263773473009" },
+  { display: "+263 775418768", tel: "+263775418768", wa: "263775418768" },
+];
+const waMain = "263786043129";
+
+const itemBtn =
+  "border-0 text-[#5c625f] transition-colors hover:text-forest";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   // Docked = the bar is pinned flush to the top instead of floating over the hero.
   const [docked, setDocked] = useState(false);
   const shellRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement | null>(null);
   const [hug, setHug] = useState<number | null>(null);
 
   useEffect(() => {
@@ -27,6 +38,25 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Clicking anywhere outside the bar, or pressing Escape, closes the contact panel.
+  useEffect(() => {
+    if (!contactOpen) return;
+    const onPointer = (e: PointerEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setContactOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setContactOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [contactOpen]);
 
   // Measure the pill's natural content width while floating, so docking can
   // animate from that exact pixel width to full width (and back). Measured with
@@ -51,6 +81,7 @@ export default function Navbar() {
 
   return (
     <header
+      ref={headerRef}
       className={cn(
         "fixed inset-x-0 z-50 flex justify-center motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
         docked ? "top-0 px-0" : "top-4 px-4 md:top-7"
@@ -107,6 +138,19 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            <li>
+              <button
+                type="button"
+                onClick={() => setContactOpen((v) => !v)}
+                aria-expanded={contactOpen}
+                className={cn(itemBtn, "flex items-center gap-1")}
+              >
+                Contact
+                <ChevronDown
+                  className={cn("h-4 w-4 transition-transform", contactOpen && "rotate-180")}
+                />
+              </button>
+            </li>
           </ul>
 
           <div className={cn("flex shrink-0 items-center gap-2", docked ? "ml-auto" : "md:ml-[46px]")}>
@@ -150,7 +194,84 @@ export default function Navbar() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setContactOpen(true);
+                  }}
+                  className="block w-full rounded-xl px-4 py-3 text-left text-lg font-bold text-forest hover:bg-ivory"
+                >
+                  Contact
+                </button>
+              </li>
             </ul>
+          </div>
+        )}
+
+        {contactOpen && (
+          <div
+            className={cn(
+              "absolute right-0 top-full w-[min(92vw,340px)] paper-surface p-5 shadow-[0_16px_40px_rgba(0,0,0,0.22)]",
+              docked ? "rounded-b-3xl rounded-t-2xl" : "mt-3 rounded-3xl"
+            )}
+          >
+            <p className="text-[13px] font-bold uppercase tracking-[0.26em] text-gold">Contact us</p>
+
+            <div className="mt-4">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#8a8577]">Email</p>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                onClick={() => setContactOpen(false)}
+                className="mt-1 block break-all text-[17px] font-bold text-forest hover:underline"
+              >
+                {CONTACT_EMAIL}
+              </a>
+            </div>
+
+            {CONTACT_NUMBERS.map((n) => (
+              <div key={n.tel} className="mt-3">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#8a8577]">Phone</p>
+                <a
+                  href={`tel:${n.tel}`}
+                  onClick={() => setContactOpen(false)}
+                  className="mt-1 block text-[17px] font-bold text-forest hover:underline"
+                >
+                  {n.display}
+                </a>
+                <div className="mt-2 flex gap-2.5">
+                  <a
+                    href={`tel:${n.tel}`}
+                    onClick={() => setContactOpen(false)}
+                    className="rounded-full border border-line bg-white px-4 py-1.5 text-sm font-bold text-forest hover:border-gold"
+                  >
+                    Call
+                  </a>
+                  <a
+                    href={`https://wa.me/${n.wa}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setContactOpen(false)}
+                    className="rounded-full border border-line bg-white px-4 py-1.5 text-sm font-bold text-forest hover:border-gold"
+                  >
+                    WhatsApp
+                  </a>
+                </div>
+              </div>
+            ))}
+
+            <div className="mt-4 border-t border-line pt-4">
+              <a
+                href={`https://wa.me/${waMain}?text=${encodeURIComponent("Hi! I'd like to book a tour with Roar and River Safaris.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setContactOpen(false)}
+                className="inline-flex items-center justify-center rounded-full bg-forest px-5 py-2.5 text-sm font-bold text-white hover:bg-forest-soft"
+              >
+                Book on WhatsApp
+              </a>
+            </div>
           </div>
         )}
       </div>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import Container from "@/components/ui/Container";
 import PalmSketch from "@/components/PalmSketch";
 import { SHORT_NAMES } from "@/lib/tours";
-import { SITE, whatsappHref } from "@/lib/site";
+import { SITE } from "@/lib/site";
 import type { Tour } from "@/lib/types";
 
 const company = [
@@ -18,68 +18,10 @@ const heading = "mb-6 text-[15px] font-bold uppercase tracking-[0.27em] text-san
 const linkCls = "text-lg text-[#d6e2d6] transition-colors hover:text-white";
 
 export default function Footer({ tours }: { tours: Tour[] }) {
-  const wa = whatsappHref();
   return (
     <footer id="contact" className="bg-forest text-white">
       <Container className="pt-20">
-        {/* First thing you see when the Contact link jumps here. */}
-        <div className="border-b border-[#32483a] pb-14">
-          <div className="grid gap-8 sm:grid-cols-3">
-            <div>
-              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Email</p>
-              <a
-                href="mailto:donnavantatenda5@gmail.com"
-                className="mt-3 block break-all text-xl font-bold text-white transition-colors hover:text-sand"
-              >
-                donnavantatenda5@gmail.com
-              </a>
-            </div>
-            <div>
-              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Phone</p>
-              <a href="tel:+263773473009" className="mt-3 block text-xl font-bold text-white transition-colors hover:text-sand">
-                +263 773 473 009
-              </a>
-              <div className="mt-3 flex flex-wrap items-center gap-2.5">
-                <a
-                  href="tel:+263773473009"
-                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
-                >
-                  Call
-                </a>
-                <a
-                  href="https://wa.me/263773473009"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
-                >
-                  WhatsApp
-                </a>
-              </div>
-            </div>
-            <div>
-              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Phone</p>
-              <a href="tel:+263775418768" className="mt-3 block text-xl font-bold text-white transition-colors hover:text-sand">
-                +263 775418768
-              </a>
-              <div className="mt-3 flex flex-wrap items-center gap-2.5">
-                <a
-                  href="tel:+263775418768"
-                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
-                >
-                  Call
-                </a>
-                <a
-                  href="https://wa.me/263775418768"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
-                >
-                  WhatsApp
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Contact details (email, phones, WhatsApp) live in the nav's Contact panel. */}
 
         {/* Logo + link columns sit left; the palm etching takes the right-hand side. */}
         <div className="flex flex-col gap-14 md:flex-row md:items-start md:gap-8 lg:gap-12">
@@ -125,13 +67,6 @@ export default function Footer({ tours }: { tours: Tour[] }) {
             <ul className="space-y-3 text-lg text-[#d6e2d6]">
               <li>Victoria Falls</li>
               <li>Zimbabwe</li>
-              {wa.startsWith("http") && (
-                <li>
-                  <a href={wa} target="_blank" rel="noopener noreferrer" className="text-sand hover:text-white">
-                    WhatsApp us
-                  </a>
-                </li>
-              )}
             </ul>
           </div>
           </div>
