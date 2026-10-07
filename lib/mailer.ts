@@ -30,11 +30,11 @@ export function isMailConfigured() {
 }
 
 function render(a: BookingAlert) {
-  const subject = `New booking: ${a.tourName} - ${a.name}${a.dbSaved ? "" : " [DB SAVE FAILED]"}`;
+  const subject = `New booking from ${a.email}: ${a.tourName}${a.dbSaved ? "" : " [DB SAVE FAILED]"}`;
   const text = [
-    `Tour: ${a.tourName}`,
     `Name: ${a.name}`,
     `Email: ${a.email}`,
+    `Tour: ${a.tourName}`,
     `Phone / WhatsApp: ${a.phone}`,
     `Travel date: ${a.travelDate}`,
     `Group size: ${a.groupSize}`,
@@ -69,7 +69,10 @@ export async function sendBookingAlert(a: BookingAlert): Promise<MailResult> {
         auth: { user: process.env.SMTP_USER!.trim(), pass: process.env.SMTP_PASS!.trim() },
       });
       await transport.sendMail({
-        from: `"Roar and River Safaris" <${process.env.SMTP_USER!.trim()}>`,
+        // Gmail requires the sender address to be your own account; the visitor's
+        // name + email (subject + reply-to + body) make clear who it's from so
+        // pressing Reply in Gmail reaches them directly.
+        from: `"${a.name}" <${process.env.SMTP_USER!.trim()}>`,
         to,
         replyTo,
         subject,
