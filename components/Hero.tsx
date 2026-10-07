@@ -22,7 +22,7 @@ export default function Hero() {
 
       <div className="mx-auto flex max-w-[1160px] flex-col items-center px-6 pb-24 pt-44 text-center sm:pb-20 sm:pt-64">
         <Reveal>
-          <span className="inline-block rounded-full bg-white/85 px-6 py-2.5 text-[11px] font-bold uppercase tracking-[0.32em] text-forest sm:text-sm">
+          <span className="hidden rounded-full bg-white/85 px-6 py-2.5 text-[11px] font-bold uppercase tracking-[0.32em] text-forest sm:inline-block sm:text-sm">
             Victoria Falls, Zimbabwe
           </span>
         </Reveal>

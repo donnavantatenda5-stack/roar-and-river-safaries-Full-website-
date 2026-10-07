@@ -24,7 +24,6 @@ export default function Footer({ tours }: { tours: Tour[] }) {
       <Container className="pt-20">
         {/* First thing you see when the Contact link jumps here. */}
         <div className="border-b border-[#32483a] pb-14">
-          <p className="mb-8 text-[15px] font-bold uppercase tracking-[0.27em] text-sand">Contact us</p>
           <div className="grid gap-8 sm:grid-cols-3">
             <div>
               <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Email</p>
@@ -36,16 +35,48 @@ export default function Footer({ tours }: { tours: Tour[] }) {
               </a>
             </div>
             <div>
-              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Call</p>
+              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Phone</p>
               <a href="tel:+263773473009" className="mt-3 block text-xl font-bold text-white transition-colors hover:text-sand">
                 +263 773 473 009
               </a>
+              <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                <a
+                  href="tel:+263773473009"
+                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
+                >
+                  Call
+                </a>
+                <a
+                  href="https://wa.me/263773473009"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
+                >
+                  WhatsApp
+                </a>
+              </div>
             </div>
             <div>
-              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Call</p>
+              <p className="text-[13px] font-bold uppercase tracking-[0.24em] text-[#96ac9a]">Phone</p>
               <a href="tel:+263775418768" className="mt-3 block text-xl font-bold text-white transition-colors hover:text-sand">
-                +263 0775418768
+                +263 775418768
               </a>
+              <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                <a
+                  href="tel:+263775418768"
+                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
+                >
+                  Call
+                </a>
+                <a
+                  href="https://wa.me/263775418768"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-[#3c5442] px-4 py-1.5 text-sm font-bold text-sand transition-colors hover:bg-[#1c3a28] hover:text-white"
+                >
+                  WhatsApp
+                </a>
+              </div>
             </div>
           </div>
         </div>
