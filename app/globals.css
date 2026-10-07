@@ -22,9 +22,11 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
+  overflow-x: clip;
 }
 
 body {
+  overflow-x: clip;
   /*
    * Handmade cotton-rag paper: warm off-white/beige base, a broad mottle for
    * the soft natural light, sparse stretched fibre specks and fine micro
@@ -61,6 +63,18 @@ body {
   background-image: var(--paper-image);
   background-repeat: no-repeat, no-repeat, repeat, repeat, repeat;
   background-attachment: fixed, fixed, fixed, fixed, fixed;
+}
+
+/*
+ * On phones, fixed background layers force a repaint on every scroll frame and
+ * make the page judder; scroll them with the page instead so scrolling stays
+ * rock solid. Desktop keeps the pinned light.
+ */
+@media (max-width: 767px) {
+  body,
+  .paper-surface {
+    background-attachment: scroll, scroll, scroll, scroll, scroll;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

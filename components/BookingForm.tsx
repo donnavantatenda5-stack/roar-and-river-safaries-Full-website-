@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Loader2 } from "lucide-react";
@@ -23,6 +23,14 @@ export default function BookingForm({
   const [pending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const successRef = useRef<HTMLDivElement | null>(null);
+
+  // On phones the form sits far down the single-column page; bring the success
+  // message on screen the same way the desktop sees it (the form card is sticky).
+  useEffect(() => {
+    if (!done) return;
+    successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [done]);
 
   const {
     register,
@@ -49,7 +57,10 @@ export default function BookingForm({
 
   if (done) {
     return (
-      <div className="rounded-2xl border border-[#e8e1d0] bg-white p-10 text-center shadow-sm">
+      <div
+        ref={successRef}
+        className="rounded-2xl border border-[#e8e1d0] bg-white p-10 text-center shadow-sm"
+      >
         <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-[#B08D4F]" />
         <h2 className="text-2xl font-semibold text-[#12281A]">Booking request received</h2>
         <p className="mt-2 text-[#5c625f]">

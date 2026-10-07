@@ -126,7 +126,10 @@ export default function SandCanvas() {
     const syncMotion = () => {
       window.cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", onScroll);
-      if (reducedMotion.matches) {
+      // Phones: paint a static layer instead of animating on every frame -
+      // the constant repaint is what makes the page feel unsteady on small
+      // screens and low-end devices.
+      if (reducedMotion.matches || width < 768) {
         paint();
         return;
       }
