@@ -337,6 +337,7 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
       "You are taken into the enclosure by a keeper for a close look at the lion and the surrounding breeding work.",
     ],
     includes: ["Keeper-led encounter", "Sanctuary conservation fee", "Refreshments"],
+    variants: [{ label: "Cheetah Walk", priceUsd: 173 }],
     governmentFees: "$10.00 per person (national park levy)",
     notes: [
       "Minimum age 12 for the close encounter",
@@ -360,6 +361,10 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
       "Return transfers from Victoria Falls accommodation",
       "Experienced pilot with commentary",
       "Photo and video on board",
+    ],
+    variants: [
+      { label: "Short flight (15 minutes)", priceUsd: 202 },
+      { label: "Long flight (30 minutes)", priceUsd: 366 },
     ],
     governmentFees: "$37.00 per person (government and fuel levy)",
     important:
@@ -388,7 +393,10 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
       "Passport",
     ],
     governmentFees: "$6.00 per person (Zambian Aviation Authority levy)",
-    priceNote: "30 minute flight $380 (plus levy)",
+    variants: [
+      { label: "Short flight (15 minutes)", priceUsd: 220 },
+      { label: "Long flight (30 minutes)", priceUsd: 378 },
+    ],
     notes: [
       "Flights depart from the Zambia side; a visa for Zambia is required",
       "Weight range 45 to 95 kg",
@@ -453,7 +461,6 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
       "National park levy",
     ],
     governmentFees: "$12.00 per person (Zambezi National Park levy)",
-    priceNote: "Luxury lower deck $81 per person",
     notes: ["Minimum 2 guests", "Life jackets provided", "No alcohol served to children"],
   },
 
@@ -539,6 +546,7 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
       "It is a cheap and relaxed way to get close to the spray and the forest without committing to a full tour.",
     ],
     includes: ["Return tram ticket", "Tram driver commentary"],
+    variants: [{ label: "Bamba Bicycle", priceUsd: 55 }],
     governmentFees: "$10.00 per person (national park levy)",
     priceNote: "Children $40",
     notes: ["Minimum age 2", "Runs on a published schedule, weather permitting"],
@@ -561,7 +569,11 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
       "Island rate, which includes the daily park fee",
     ],
     governmentFees: "Island rate, which includes the national park fee",
-    priceNote: "High Tea $189 off-peak / $199 peak. Island daily rate $50 per person",
+    variants: [
+      { label: "Morning breeze", priceUsd: 195 },
+      { label: "Lunch breeze", priceUsd: 250 },
+      { label: "High tea breeze", priceUsd: 227 },
+    ],
     notes: [
       "Minimum 2 guests",
       "Green and low water seasons priced differently",
@@ -582,6 +594,7 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
     includes: ["Guided farm tour", "Crocodile feeding demonstration", "Photographs"],
     governmentFees: "Included in the listed price",
     priceNote: "Children $7",
+    variants: [{ label: "Croc Cage Dive", priceUsd: 120 }],
     notes: ["Minimum age 3", "Hand washing encouraged after the visit"],
   },
 

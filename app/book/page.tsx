@@ -126,6 +126,27 @@ export default async function BookPage({
                             <p className="mt-4 text-[15px] leading-snug text-muted">{detail.priceNote}</p>
                           )}
 
+                          {detail.variants && detail.variants.length > 0 && (
+                            <div className="mt-5">
+                              <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-gold-dark">
+                                Options
+                              </p>
+                              <ul className="mt-3 space-y-2.5">
+                                {detail.variants.map((v) => (
+                                  <li
+                                    key={v.label}
+                                    className="flex items-baseline justify-between gap-3 rounded-[12px] border border-line bg-white px-4 py-3 text-[15px] text-muted"
+                                  >
+                                    <span>{v.label}</span>
+                                    <span className="shrink-0 font-bold text-forest">
+                                      {formatPrice(v.priceUsd)}
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
                           {detail.governmentFees && (
                             <p className="mt-7 rounded-[14px] border-l-4 border-gold bg-cream px-5 py-4 text-[15px] leading-snug text-muted">
                               <span className="font-bold text-forest">Government fees</span>{" "}

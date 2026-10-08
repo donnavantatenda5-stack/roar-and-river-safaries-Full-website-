@@ -8,11 +8,13 @@ export default function TourBookingCard({
   title,
   governmentFees,
   priceNote,
+  variants,
 }: {
   tour: Tour;
   title: string;
   governmentFees?: string;
   priceNote?: string;
+  variants?: { label: string; priceUsd: number }[];
 }) {
   const wa = whatsappHref(`Hi! I'd like to book the ${title} with Roar and River Safaris.`);
 
@@ -30,6 +32,20 @@ export default function TourBookingCard({
 
       {priceNote && (
         <p className="mt-4 text-[15px] leading-snug text-[#d6e2d6]">{priceNote}</p>
+      )}
+
+      {variants && variants.length > 0 && (
+        <div className="mt-5 rounded-xl bg-[#1c3a28] px-5 py-4">
+          <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-sand">Options</p>
+          <ul className="mt-3 space-y-2.5">
+            {variants.map((v) => (
+              <li key={v.label} className="flex items-baseline justify-between gap-3 text-[15px]">
+                <span className="text-[#d6e2d6]">{v.label}</span>
+                <span className="shrink-0 font-bold text-white">{formatPrice(v.priceUsd)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {governmentFees && (

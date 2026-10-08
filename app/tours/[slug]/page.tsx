@@ -209,6 +209,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
               title={name}
               governmentFees={detail?.governmentFees}
               priceNote={detail?.priceNote}
+              variants={detail?.variants}
             />
             </div>
           </div>

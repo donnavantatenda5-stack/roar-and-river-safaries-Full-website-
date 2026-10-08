@@ -1,13 +1,14 @@
 import type { Tour } from "@/lib/types";
 
 /** The four groupings shown in the Activities section. */
-export type ActivityCategory = "adrenaline" | "wildlife" | "scenic" | "cultural";
+export type ActivityCategory = "adrenaline" | "wildlife" | "scenic" | "cultural" | "accommodation";
 
 export const ACTIVITY_CATEGORIES: { id: ActivityCategory; label: string }[] = [
   { id: "adrenaline", label: "Adrenaline & Adventure" },
   { id: "wildlife", label: "Wildlife and Safari" },
   { id: "scenic", label: "Scenic Tours" },
   { id: "cultural", label: "Cultural" },
+  { id: "accommodation", label: "Accommodation" },
 ];
 
 export type Activity = Tour & { category: ActivityCategory };
@@ -18,6 +19,7 @@ const IMAGE: Record<ActivityCategory, string> = {
   wildlife: "/images/places/zambezi-national-park.jpg",
   scenic: "/images/places/zambezi-river.jpg",
   cultural: "/images/places/victoria-falls.jpg",
+  accommodation: "/images/places/victoria-falls.jpg",
 };
 
 /**
@@ -80,40 +82,54 @@ const RAW: {
   { slug: "white-water-rafting", name: "White Water Rafting", price: 173, category: "adrenaline" },
   { slug: "adventure-jet-boat", name: "Adventure Jet Boat", price: 141, category: "adrenaline" },
   { slug: "river-boarding", name: "River Boarding", price: 190, category: "adrenaline" },
-  { slug: "flying-fox", name: "Flying Fox", price: 69, category: "adrenaline" },
+  { slug: "flying-fox", name: "Flying Fox", price: 70, category: "adrenaline" },
   { slug: "canopy-tour", name: "Canopy Tour", price: 81, category: "adrenaline" },
 
   // Wildlife and Safari
-  { slug: "upper-zambezi-canoeing", name: "Upper Zambezi Canoeing", price: 170, category: "wildlife" },
+  { slug: "upper-zambezi-canoeing", name: "Upper Zambezi Canoeing", price: 196, category: "wildlife" },
   { slug: "overnight-canoe-safari", name: "Overnight Canoe Safari", price: 286, category: "wildlife" },
   { slug: "siduli-hide", name: "Siduli Hide", price: 58, category: "wildlife" },
-  { slug: "rhino-game-drive-dinner", name: "Rhino Search Game Drive & Dinner", price: 288, category: "wildlife" },
-  { slug: "elephant-encounter", name: "Elephant Encounter", price: 169, category: "wildlife" },
-  { slug: "zambezi-fishing", name: "Zambezi Fishing", price: 150, category: "wildlife" },
-  { slug: "horseback-safari", name: "Horse Back Safari", price: 148, category: "wildlife" },
-  { slug: "walking-safari", name: "Walking Safari", price: 112, category: "wildlife" },
-  { slug: "lion-encounter", name: "Lion Encounter", price: 115, category: "wildlife" },
+  { slug: "rhino-game-drive-dinner", name: "Rhino Search Game Drive & Dinner", price: 207, category: "wildlife" },
+  { slug: "elephant-encounter", name: "Elephant Encounter", price: 179, category: "wildlife" },
+  { slug: "zambezi-fishing", name: "Zambezi Fishing", price: 165, category: "wildlife" },
+  { slug: "horseback-safari", name: "Horse Back Safari", price: 160, category: "wildlife" },
+  { slug: "walking-safari", name: "Walking Safari", price: 140, category: "wildlife" },
+  { slug: "lion-encounter", name: "Lion Encounter", price: 173, category: "wildlife" },
+  { slug: "bird-watching", name: "Bird Watching", price: 190, category: "wildlife" },
 
   // Scenic Tours
-  { slug: "helicopter-flight", name: "Helicopter Flight", price: 173, category: "scenic" },
-  { slug: "microlight-flight", name: "Microlite Flight", price: 190, category: "scenic" },
+  { slug: "helicopter-flight", name: "Helicopter Flight", price: 202, category: "scenic" },
+  { slug: "microlight-flight", name: "Microlite Flight", price: 220, category: "scenic" },
   { slug: "river-safari", name: "River Safari", price: 81, category: "scenic" },
-  { slug: "sunset-dinner-cruise", name: "Sunset and Dinner Cruise", price: 110, category: "scenic" },
-  { slug: "zambezi-explorer-cruise", name: "Zambezi Explorer Sunset Cruise", price: 110, category: "scenic" },
+  { slug: "sunset-dinner-cruise", name: "Sunset and Dinner Cruise", price: 122, category: "scenic" },
+  { slug: "zambezi-explorer-cruise", name: "Zambezi Explorer Sunset Cruise", price: 81, category: "scenic" },
+  { slug: "sunrise-cruise", name: "Sunrise Cruise", price: 105, category: "scenic" },
+  { slug: "lunch-cruise", name: "Lunch Cruise", price: 105, category: "scenic" },
   { slug: "ra-ikane-cruise", name: "Ra Ikane Cruise", price: 110, category: "scenic" },
-  { slug: "historic-bridge-tour", name: "Historical Bridge Tour", price: 64, category: "scenic" },
-  { slug: "steam-train-trip", name: "Steam Train Trip", price: 220, category: "scenic" },
-  { slug: "victoria-falls-tram", name: "Victoria Falls Tram", price: 75, category: "scenic" },
+  { slug: "historic-bridge-tour", name: "Historical Bridge Tour", price: 96, category: "scenic" },
+  { slug: "steam-train-trip", name: "Steam Train Trip", price: 250, category: "scenic" },
+  { slug: "victoria-falls-tram", name: "Victoria Falls Bamba Tram", price: 65, category: "scenic" },
   { slug: "livingstone-island-tour", name: "Livingstone Island Tour", price: 159, category: "scenic" },
-  { slug: "crocodile-farm", name: "Crocodile Farm", price: 15, category: "scenic" },
+  { slug: "crocodile-farm", name: "Crocodile Farm", price: 55, category: "scenic" },
   { slug: "lunar-rainbow-tour", name: "Lunar Rainbow Tour", price: 31, category: "scenic" },
   { slug: "bike-tour", name: "Bike Tour", price: 60, category: "scenic" },
+  { slug: "falls-tour-zam", name: "Falls Tour (Zambia)", price: 75, category: "scenic" },
+  { slug: "big-tree-visit", name: "Big Tree Visit", price: 40, category: "scenic" },
+  { slug: "quad-bikes", name: "Quad Bikes", price: 72, category: "scenic" },
+  { slug: "airport-transfer", name: "Airport Transfer", price: 17, category: "scenic" },
+  { slug: "airport-transfer-livingstone", name: "Airport Transfer (Livingstone Airport)", price: 30, category: "scenic" },
 
   // Cultural
-  { slug: "boma-dinner", name: "Boma Dinner", price: 60, category: "cultural" },
-  { slug: "dusty-road-experience", name: "Dusty Road Experience", price: 100, category: "cultural" },
-  { slug: "traditional-village-tour", name: "Traditional Village Tour", price: 74, category: "cultural" },
-  { slug: "simunye-theatre", name: "Victoria Falls Theatre: Simunye", price: 58, category: "cultural" },
+  { slug: "boma-dinner", name: "Boma Dinner", price: 85, category: "cultural" },
+  { slug: "dusty-road-experience", name: "Dusty Road Experience", price: 70, category: "cultural" },
+  { slug: "traditional-village-tour", name: "Traditional Village Tour", price: 75, category: "cultural" },
+  { slug: "simunye-theatre", name: "Victoria Falls Theatre: Simunye", price: 68, category: "cultural" },
+  { slug: "city-tour", name: "City Tour", price: 65, category: "cultural" },
+  { slug: "shopping-tour", name: "Shopping", price: 30, category: "cultural" },
+  { slug: "livingstone-city-tour-museum", name: "Livingstone City Tour & Museum", price: 190, category: "cultural" },
+
+  // Accommodation
+  { slug: "mollynelly-guesthouse", name: "Mollynelly Guesthouse", price: 220, category: "accommodation" },
 ];
 
 export const ACTIVITIES: Activity[] = RAW.map((a, i) => ({

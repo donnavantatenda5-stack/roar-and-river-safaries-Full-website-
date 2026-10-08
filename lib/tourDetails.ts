@@ -30,6 +30,8 @@ export type TourDetail = {
   governmentFees?: string;
   /** Extra pricing options, e.g. tandem rates. Shown under the price. */
   priceNote?: string;
+  /** Pricing options shown when you open the page, e.g. short and long flights. */
+  variants?: { label: string; priceUsd: number }[];
   /** How guests get to the start of the tour. */
   pickup?: string;
   /** Where the tour finishes. Defaults to "back at the meeting point". */
@@ -170,6 +172,7 @@ export const TOUR_DETAILS: Record<string, TourDetail> = {
     pickup:
       "Participants must first pass through the Zimbabwe border post before accessing the Victoria Falls Bridge. Check-in and registration take place at our bungee registration office near the bridge, with the jump platform on the bridge itself between Zimbabwe and Zambia. Transfers are available for $12 per person.",
     body: [
+      "The bungee jump is priced at $194 per person for a solo jump.",
       "Get ready to experience one of the most thrilling adventures on the planet \u2014 a bungee jump from the iconic Victoria Falls Bridge. Standing 111 metres above the powerful Zambezi River, with the thunderous Victoria Falls as your backdrop, this is not just a jump, it\u2019s a leap into the heart of one of the world\u2019s greatest natural wonders.",
       "Feel the rush of adrenaline as you dive headfirst towards the Batoka Gorge, plummeting in freefall before the cord catches and launches you into a series of exhilarating bounces. Whether you\u2019re an experienced thrill-seeker or a first-time jumper, the unmatched combination of adrenaline and awe-inspiring scenery makes this an unforgettable, once-in-a-lifetime experience.",
       "Our expert team ensures a safe and seamless adventure, guiding you through every step. With Victoria Falls roaring beside you, it\u2019s more than a bungee jump \u2014 it\u2019s a leap into the wild beauty of Africa.",
@@ -208,7 +211,12 @@ export const TOUR_DETAILS: Record<string, TourDetail> = {
     duration: "15-20 minutes",
     minPax: "Pax: 2 max",
     location: "Victoria Falls Bridge (15-min walk from town)",
-    priceNote: "$82 per person for a tandem zipline",
+    variants: [
+      { label: "Zipline", priceUsd: 110 },
+      { label: "Tandem gorge", priceUsd: 193 },
+      { label: "Tandem zipline", priceUsd: 160 },
+      { label: "Flying fox", priceUsd: 70 },
+    ],
     pickup:
       "Participants must first pass through the Zimbabwe border post before accessing the Victoria Falls Bridge. Check-in and registration take place at our activity registration office near the bridge, with the platform on the Victoria Falls Bridge itself between Zimbabwe and Zambia. Transfers are available for $12 per person.",
     body: [
@@ -252,6 +260,7 @@ export const TOUR_DETAILS: Record<string, TourDetail> = {
     pickup:
       "Participants must first pass through the Zimbabwe border post before accessing the Victoria Falls Bridge. Check-in and registration take place at our bungee registration office near the bridge, with the jump platform on the bridge itself between Zimbabwe and Zambia. Transfers are available for $12 per person.",
     body: [
+      "The gorge swing is priced at $135 per person for a solo swing.",
       "For an adrenaline-pumping experience like no other, take on the epic Victoria Falls Bridge Swing. This thrilling adventure begins with a heart-racing leap from the iconic Victoria Falls Bridge, 111 metres above the roaring Zambezi River. But instead of freefalling like a bungee jump, you\u2019ll swoop in a massive arc across the stunning Batoka Gorge, swinging out over the rushing waters below.",
       "Feel the surge of excitement as gravity takes over, propelling you on an exhilarating pendulum swing that gives you a whole new perspective of the magnificent Victoria Falls. The thrill intensifies as you soar through the gorge, with the sound of the thundering waterfall echoing around you and the spectacular scenery rushing by.",
       "Perfect for solo adventurers or tandem pairs, the bridge swing is an unforgettable experience for anyone looking to combine adrenaline with the natural beauty of one of the world\u2019s most awe-inspiring locations. Our expert guides ensure your safety at every step, so all you need to do is embrace the thrill of the swing and enjoy the ride!",
