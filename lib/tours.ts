@@ -75,10 +75,14 @@ const REQUIRED_SLUGS = ["bungee-jumping", "gorge-swing"];
  */
 function normalizeTours(rows: Tour[]): Tour[] {
   const filtered = rows.filter((t) => !HIDDEN_SLUGS.has(t.slug));
+  const fallbackBySlug = new Map(FALLBACK_TOURS.map((f) => [f.slug, f]));
   const filled = filtered.map((t) => {
+    const fallback = fallbackBySlug.get(t.slug);
+    if (fallback) {
+      return { ...t, price_usd: fallback.price_usd };
+    }
     if (t.price_usd === null) {
-      const price = FALLBACK_TOURS.find((f) => f.slug === t.slug)?.price_usd ?? null;
-      if (price !== null) return { ...t, price_usd: price };
+      return { ...t, price_usd: null };
     }
     return t;
   });
