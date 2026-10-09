@@ -51,7 +51,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
 
         <Container className="pb-16">
           <Link
-            href="/#tours"
+            href="/tours"
             className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-[0.22em] text-white/85 transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={2.4} /> All tours
