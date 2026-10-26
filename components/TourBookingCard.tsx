@@ -16,14 +16,25 @@ export default function TourBookingCard({
   priceNote?: string;
   variants?: { label: string; priceUsd: number }[];
 }) {
-  const wa = whatsappHref(`Hi! I'd like to book the ${title} with Roar and River Safaris.`);
+  const isAccommodation = tour.category === "accommodation";
+  const wa = whatsappHref(
+    `Hi! I'd like to ${isAccommodation ? "enquire about a stay at" : "book the"} ${title} with Roar and River Safaris.`
+  );
 
   return (
     <div className="rounded-[22px] bg-forest p-8 text-white shadow-[0_20px_50px_rgba(18,40,26,0.28)]">
-      <p className="text-[12px] font-bold uppercase tracking-[0.28em] text-sand">Price</p>
+      <p className="text-[12px] font-bold uppercase tracking-[0.28em] text-sand">
+        {isAccommodation ? "Indicative rate" : "Price"}
+      </p>
       <p className="mt-3 flex items-baseline gap-2">
-        <span className="font-serif text-[3.2rem] font-bold leading-none text-white">
-          {formatPrice(tour.price_usd)}
+        <span
+          className={
+            isAccommodation
+              ? "min-w-0 font-serif text-xl font-bold leading-snug text-white sm:text-2xl"
+              : "font-serif text-[3.2rem] font-bold leading-none text-white"
+          }
+        >
+          {formatPrice(tour.price_usd, tour.price_label)}
         </span>
         {tour.price_usd !== null && (
           <span className="text-[17px] text-[#bed0bd]">per person</span>
@@ -59,7 +70,7 @@ export default function TourBookingCard({
         href={`/book?tour=${tour.slug}`}
         className="mt-7 flex h-[58px] items-center justify-center rounded-full bg-white px-8 text-[17px] font-bold text-forest transition-colors hover:bg-ivory"
       >
-        Book this tour
+        {isAccommodation ? "Enquire about this stay" : "Book this tour"}
       </a>
 
       <a

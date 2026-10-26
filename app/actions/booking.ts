@@ -27,18 +27,28 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
   // Bots fill the hidden field; pretend it worked and do nothing.
   if (d.website) return { ok: true };
 
-  // No .select() here on purpose: visitors may insert bookings but never read them.
-  const { error } = await supabase.from("bookings").insert({
-    tour_id: d.tour_id,
-    full_name: d.full_name,
-    email: d.email,
-    phone: d.phone,
-    travel_date: d.travel_date,
-    group_size: d.group_size,
-    message: d.message || null,
-  });
+  const activity = getActivity(d.tour_id);
+  const { error } = activity
+    ? await supabase.from("leads").insert({
+        name: d.full_name,
+        email: d.email,
+        dates: d.travel_date,
+        group_size: d.group_size,
+        interested_tour: activity.name,
+        phone: d.phone,
+        message: d.message || null,
+      })
+    : await supabase.from("bookings").insert({
+        tour_id: d.tour_id,
+        full_name: d.full_name,
+        email: d.email,
+        phone: d.phone,
+        travel_date: d.travel_date,
+        group_size: d.group_size,
+        message: d.message || null,
+      });
 
-  if (error) console.error("Booking insert failed:", error.message);
+  if (error) console.error(activity ? "Activity enquiry insert failed:" : "Booking insert failed:", error.message);
 
   // Alert the operator - also when the insert failed, so a booking that only
   // lives in this email is never silently lost. Best-effort, never fails the request.

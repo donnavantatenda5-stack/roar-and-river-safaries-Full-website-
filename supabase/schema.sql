@@ -67,3 +67,59 @@ update public.tours set is_active = false where slug = 'bungee-jumping-gorge-swi
 -- Chobe is priced per person. The figure above is the full price, so update it
 -- directly if you ever change it: update public.tours set price_usd = 229
 -- where slug = 'chobe-day-trip-botswana';
+
+-- ---------------------------------------------------------------------------
+-- AI Travel Assistant
+-- ---------------------------------------------------------------------------
+
+-- Extra context the assistant reads alongside name, description and price.
+-- Prices stay in price_usd; the assistant always uses the live website prices.
+alter table public.tours add column if not exists duration text;
+alter table public.tours add column if not exists category text;
+
+update public.tours as t
+set duration = v.duration,
+    category = v.category
+from (values
+  ('victoria-falls-guided-tour',       '2-3 hours',   'Falls tour'),
+  ('zambezi-sunset-cruise',            '2 hours',     'River cruise'),
+  ('chobe-day-trip-botswana',          'Full day',    'Wildlife safari'),
+  ('devils-pool-angels-pool',          'Half day',    'Adventure'),
+  ('zambezi-national-park-game-drive', '3-4 hours',   'Game drive'),
+  ('bungee-jumping',                   '15 minutes',  'Adrenaline'),
+  ('gorge-swing',                      '30 minutes',  'Adrenaline'),
+  ('bridge-zipline',                   '15 minutes',  'Adrenaline')
+) as v(slug, duration, category)
+where t.slug = v.slug
+  and (t.duration is null or t.category is null);
+
+-- Booking enquiries captured by the chat assistant. The public may insert,
+-- but nobody can read, edit or delete leads from the website. Read them in
+-- the Supabase dashboard (Table Editor > leads).
+create table if not exists public.leads (
+  id              uuid primary key default gen_random_uuid(),
+  name            text not null check (char_length(name) between 2 and 100),
+  email           text not null check (char_length(email) between 5 and 254),
+  dates           text not null check (char_length(dates) between 1 and 120),
+  group_size      int  not null check (group_size between 1 and 50),
+  interested_tour text check (char_length(interested_tour) <= 120),
+  phone           text check (char_length(phone) between 7 and 20),
+  message         text check (char_length(message) <= 1000),
+  created_at      timestamptz not null default now()
+);
+
+alter table public.leads add column if not exists phone text;
+alter table public.leads add column if not exists message text;
+
+create index if not exists leads_created_at_idx
+  on public.leads (created_at desc);
+
+alter table public.leads enable row level security;
+
+drop policy if exists "Public can create leads" on public.leads;
+create policy "Public can create leads"
+  on public.leads for insert
+  to anon, authenticated
+  with check (true);
+
+grant insert on public.leads to anon, authenticated;

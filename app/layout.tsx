@@ -3,6 +3,7 @@ import { Lato, Lora } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import SandCanvas from "@/components/SandCanvas";
+import ChatAssistant from "@/components/ChatAssistant";
 
 /*
  * Fonts. Lato + Lora match the design mockup most closely.
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <div className="relative z-[1]">{children}</div>
         <SandCanvas />
+        <ChatAssistant />
       </body>
     </html>
   );

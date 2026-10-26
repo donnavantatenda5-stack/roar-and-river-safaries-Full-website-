@@ -1,5 +1,6 @@
 import type { Tour } from "@/lib/types";
 import { ACTIVITY_DETAILS } from "@/lib/activityDetails";
+import { getActivity } from "@/lib/activities";
 
 /**
  * Long-form detail content for the tour pages.
@@ -293,7 +294,27 @@ export const TOUR_DETAILS: Record<string, TourDetail> = {
 /** Detail content for a tour or activity, if we have any written for it. */
 export function tourDetail(slug: string): TourDetail | undefined {
   // Activities live in a separate file so the core tour content above stays as it is.
-  return TOUR_DETAILS[slug] ?? ACTIVITY_DETAILS[slug];
+  const detail = TOUR_DETAILS[slug] ?? ACTIVITY_DETAILS[slug];
+  if (detail) return detail;
+
+  const accommodation = getActivity(slug);
+  if (accommodation?.category !== "accommodation") return undefined;
+
+  return {
+    summary: accommodation.description ?? "Ask us about accommodation availability.",
+    startTime: "By arrangement",
+    duration: "Flexible stay",
+    minPax: "",
+    location: "Victoria Falls and surrounding safari areas",
+    body: [
+      accommodation.description ?? `Ask us about a stay at ${accommodation.name}.`,
+      "Send an enquiry with your dates and group size. Our team will confirm availability and the final rate with you.",
+    ],
+    notes: [
+      `Indicative rate: ${accommodation.price_label ?? "Please enquire"}. Rates depend on season, room type and availability.`,
+      "Please include the number of nights you would like in your message.",
+    ],
+  };
 }
 
 /** Intro paragraph: the database description if set, otherwise the summary. */
