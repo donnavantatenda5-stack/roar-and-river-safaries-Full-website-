@@ -80,7 +80,7 @@ function Grid({ tours }: { tours: Tour[] }) {
                   {t.name}
                 </h3>
                 <span className="mt-auto pt-6 font-serif text-[2rem] font-bold leading-none text-gold-dark">
-                  {formatPrice(t.price_usd, t.price_label)}
+                  {formatPrice(t.price_usd)}
                 </span>
               </div>
             </Link>

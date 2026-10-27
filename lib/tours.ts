@@ -3,11 +3,11 @@ import { ACTIVITIES, getActivity } from "@/lib/activities";
 
 /** Shown if Supabase isn't configured yet or can't be reached. */
 export const FALLBACK_TOURS: Tour[] = [
-  { slug: "victoria-falls-guided-tour", name: "Victoria Falls Guided Tour", price_usd: 35 },
-  { slug: "zambezi-sunset-cruise", name: "Zambezi Sunset Cruise", price_usd: 55 },
-  { slug: "chobe-day-trip-botswana", name: "Chobe Day Trip (Botswana)", price_usd: 180 },
+{ slug: "victoria-falls-guided-tour", name: "Victoria Falls Guided Tour", price_usd: 90 },
+  { slug: "zambezi-sunset-cruise", name: "Zambezi Sunset Cruise", price_usd: 75 },
+  { slug: "chobe-day-trip-botswana", name: "Chobe Day Trip (Botswana)", price_usd: 200 },
   { slug: "devils-pool-angels-pool", name: "Devil's Pool / Angel's Pool", price_usd: 120 },
-  { slug: "zambezi-national-park-game-drive", name: "Zambezi National Park Game Drive", price_usd: 80 },
+  { slug: "zambezi-national-park-game-drive", name: "Zambezi National Park Game Drive", price_usd: 135 },
   { slug: "bungee-jumping", name: "Victoria Falls Bungee Jump", price_usd: 194 },
   { slug: "gorge-swing", name: "Victoria Falls Bridge Swing", price_usd: 135 },
   { slug: "bridge-zipline", name: "Victoria Falls Bridge Zipline", price_usd: 110 },
@@ -66,7 +66,7 @@ export async function getTours(): Promise<Tour[]> {
 const HIDDEN_SLUGS = new Set(["bungee-jumping-gorge-swing"]);
 
 /** Signature tours that must appear on the list even before their row exists in the DB. */
-const REQUIRED_SLUGS = ["bungee-jumping", "gorge-swing", "bridge-zipline"];
+const REQUIRED_SLUGS = ["bungee-jumping", "gorge-swing"];
 
 /**
  * Clean a list from the database so cards always show a real price:
@@ -77,17 +77,14 @@ function normalizeTours(rows: Tour[]): Tour[] {
   const filtered = rows.filter((t) => !HIDDEN_SLUGS.has(t.slug));
   const fallbackBySlug = new Map(FALLBACK_TOURS.map((f) => [f.slug, f]));
   const filled = filtered.map((t) => {
-    // The database is the source of truth. Only use the catalogue price when
-    // the row genuinely has no price set, so edits in Supabase always show.
-    const price =
-      t.price_usd === null || t.price_usd === undefined ? null : Number(t.price_usd);
-
-    if (price !== null && Number.isFinite(price)) {
-      return { ...t, price_usd: price };
-    }
-
     const fallback = fallbackBySlug.get(t.slug);
-    return { ...t, price_usd: fallback ? fallback.price_usd : null };
+    if (fallback) {
+      return { ...t, price_usd: fallback.price_usd };
+    }
+    if (t.price_usd === null) {
+      return { ...t, price_usd: null };
+    }
+    return t;
   });
 
   const slugs = new Set(filled.map((t) => t.slug));

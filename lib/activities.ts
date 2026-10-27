@@ -1,7 +1,6 @@
 import type { Tour } from "@/lib/types";
-import { ACCOMMODATION_GROUPS } from "@/lib/accommodations";
 
-/** The five groupings shown in the Activities section. */
+/** The four groupings shown in the Activities section. */
 export type ActivityCategory = "adrenaline" | "wildlife" | "scenic" | "cultural" | "accommodation";
 
 export const ACTIVITY_CATEGORIES: { id: ActivityCategory; label: string }[] = [
@@ -76,11 +75,8 @@ const ACTIVITY_IMAGE: Record<string, string> = {
 const RAW: {
   slug: string;
   name: string;
-  price: number | null;
+  price: number;
   category: ActivityCategory;
-  description?: string;
-  price_label?: string;
-  image_url?: string;
 }[] = [
   // Adrenaline & Adventure
   { slug: "white-water-rafting", name: "White Water Rafting", price: 173, category: "adrenaline" },
@@ -132,17 +128,8 @@ const RAW: {
   { slug: "shopping-tour", name: "Shopping", price: 30, category: "cultural" },
   { slug: "livingstone-city-tour-museum", name: "Livingstone City Tour & Museum", price: 190, category: "cultural" },
 
-  ...ACCOMMODATION_GROUPS.flatMap((group) =>
-    group.stays.map((stay) => ({
-      slug: stay.slug,
-      name: stay.name,
-      price: null,
-      price_label: stay.priceLabel,
-      description: `${stay.type}. ${stay.description}`,
-      image_url: stay.image,
-      category: "accommodation" as const,
-    }))
-  ),
+  // Accommodation
+  { slug: "mollynelly-guesthouse", name: "Mollynelly Guesthouse", price: 220, category: "accommodation" },
 ];
 
 export const ACTIVITIES: Activity[] = RAW.map((a, i) => ({
@@ -151,9 +138,8 @@ export const ACTIVITIES: Activity[] = RAW.map((a, i) => ({
   name: a.name,
   price_usd: a.price,
   category: a.category,
-  description: a.description ?? null,
-  price_label: a.price_label ?? null,
-  image_url: a.image_url ?? ACTIVITY_IMAGE[a.slug] ?? IMAGE[a.category],
+  description: null,
+  image_url: ACTIVITY_IMAGE[a.slug] ?? IMAGE[a.category],
   sort_order: i + 1,
   is_active: true,
 }));

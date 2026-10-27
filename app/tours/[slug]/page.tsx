@@ -243,7 +243,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                         {t.name}
                       </h3>
                       <p className="mt-auto pt-5 font-serif text-[1.8rem] font-bold leading-none text-gold-dark">
-                        {formatPrice(t.price_usd, t.price_label)}
+                        {formatPrice(t.price_usd)}
                       </p>
                     </div>
                   </Link>

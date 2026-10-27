@@ -2,7 +2,6 @@ import Container from "@/components/ui/Container";
 import ButtonLink from "@/components/ui/ButtonLink";
 import ExpandableTourGrid from "@/components/ExpandableTourGrid";
 import Footer from "@/components/Footer";
-import AccommodationSection from "@/components/AccommodationSection";
 import { getActivities, getTours } from "@/lib/tours";
 import { ACTIVITY_CATEGORIES } from "@/lib/activities";
 
@@ -25,7 +24,7 @@ export default async function ToursIndexPage() {
   const groups = ACTIVITY_CATEGORIES.map((c) => ({
     ...c,
     items: activities.filter((a) => a.category === c.id),
-  })).filter((g) => g.id !== "accommodation" && g.items.length > 0);
+  })).filter((g) => g.items.length > 0);
 
   return (
     <>
@@ -68,8 +67,6 @@ export default async function ToursIndexPage() {
             <ExpandableTourGrid tours={group.items} initial={ACTIVITY_VISIBLE} />
           </section>
         ))}
-
-        <AccommodationSection />
 
         <div className="mt-24 flex justify-center">
           <ButtonLink href="/book">Start a booking</ButtonLink>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { createBooking } from "@/app/actions/booking";
@@ -23,8 +23,6 @@ export default function BookingForm({
   const [pending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
-  const [doneForAccommodation, setDoneForAccommodation] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
   const successRef = useRef<HTMLDivElement | null>(null);
 
   // On phones the form sits far down the single-column page; bring the success
@@ -36,7 +34,6 @@ export default function BookingForm({
 
   const {
     register,
-    control,
     handleSubmit,
     reset,
     formState: { errors },
@@ -44,21 +41,12 @@ export default function BookingForm({
     resolver: zodResolver(bookingSchema),
     defaultValues: { tour_id: defaultTourId ?? "", group_size: 2 },
   });
-  const selectedTourId = useWatch({ control, name: "tour_id" });
-  const selectedTour = tours.find((tour) => tour.id === selectedTourId);
-  const isAccommodationEnquiry = selectedTour?.category === "accommodation";
 
   const onSubmit = (values: BookingInput) => {
     setServerError(null);
     startTransition(async () => {
       const res = await createBooking(values);
       if (res.ok) {
-        setDoneForAccommodation(isAccommodationEnquiry);
-        setConfirmationMessage(
-          isAccommodationEnquiry
-            ? "Thank you! We'll check availability and contact you shortly about your stay."
-            : "Thank you! We'll contact you shortly to confirm your adventure."
-        );
         setDone(true);
         reset();
       } else {
@@ -74,10 +62,10 @@ export default function BookingForm({
         className="rounded-2xl border border-[#e8e1d0] bg-white p-10 text-center shadow-sm"
       >
         <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-[#B08D4F]" />
-        <h2 className="text-2xl font-semibold text-[#12281A]">
-          {doneForAccommodation ? "Stay enquiry received" : "Booking request received"}
-        </h2>
-        <p className="mt-2 text-[#5c625f]">{confirmationMessage}</p>
+        <h2 className="text-2xl font-semibold text-[#12281A]">Booking request received</h2>
+        <p className="mt-2 text-[#5c625f]">
+          Thank you! We&apos;ll contact you shortly to confirm your adventure.
+        </p>
         <button
           onClick={() => setDone(false)}
           className="mt-6 rounded-full bg-[#12281A] px-6 py-3 text-sm font-semibold text-white"
@@ -95,12 +83,12 @@ export default function BookingForm({
       className="space-y-5 rounded-2xl border border-[#e8e1d0] bg-white p-6 shadow-sm sm:p-8"
     >
       <div>
-        <label className={label} htmlFor="tour_id">Tour or accommodation</label>
+        <label className={label} htmlFor="tour_id">Tour</label>
         <select id="tour_id" className={field} {...register("tour_id")}>
           <option value="">Choose a tour...</option>
           {tours.map((t) => (
             <option key={t.id} value={t.id}>
-              {t.name} - {formatPrice(t.price_usd, t.price_label)}
+              {t.name} - {formatPrice(t.price_usd)}
             </option>
           ))}
         </select>
@@ -148,11 +136,6 @@ export default function BookingForm({
       <div>
         <label className={label} htmlFor="message">Message (optional)</label>
         <textarea id="message" rows={4} className={field} {...register("message")} />
-        {isAccommodationEnquiry && (
-          <p className="mt-2 text-sm text-[#5c625f]">
-            Please include how many nights you would like to stay.
-          </p>
-        )}
         {errors.message && <p className={err}>{errors.message.message}</p>}
       </div>
 
@@ -172,11 +155,7 @@ export default function BookingForm({
         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#12281A] px-6 py-4 text-base font-semibold text-white transition hover:bg-[#1c3a28] disabled:opacity-60"
       >
         {pending && <Loader2 className="h-5 w-5 animate-spin" />}
-        {pending
-          ? "Sending..."
-          : isAccommodationEnquiry
-            ? "Send stay enquiry"
-            : "Request booking"}
+        {pending ? "Sending..." : "Request booking"}
       </button>
     </form>
   );

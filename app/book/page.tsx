@@ -83,7 +83,7 @@ export default async function BookPage({
                     <div className="px-7 pb-8 pt-7">
                       <div className="flex flex-wrap items-baseline gap-3 border-b border-line pb-6">
                         <span className="font-serif text-[2.6rem] font-bold leading-none text-gold-dark">
-                          {formatPrice(selected.price_usd, selected.price_label)}
+                          {formatPrice(selected.price_usd)}
                         </span>
                         {selected.price_usd !== null && (
                           <span className="text-[17px] text-muted">per person</span>
