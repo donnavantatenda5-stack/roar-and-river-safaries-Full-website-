@@ -52,9 +52,7 @@ export default function ChatAssistant() {
     if (!open) return;
 
     const focusTimer = window.setTimeout(() => {
-      if (!window.matchMedia("(pointer: coarse)").matches) {
-        inputRef.current?.focus({ preventScroll: true });
-      }
+      inputRef.current?.focus({ preventScroll: true });
     }, 150);
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -104,12 +102,7 @@ export default function ChatAssistant() {
         | { reply?: unknown; error?: unknown }
         | null;
 
-      if (!response.ok) {
-        setError(
-          data && typeof data.error === "string" ? data.error : FRIENDLY_ERROR
-        );
-        return;
-      }
+      if (!response.ok) throw new Error("Request failed");
       if (!data || typeof data.reply !== "string" || !data.reply.trim()) {
         throw new Error("Empty reply");
       }
@@ -251,7 +244,6 @@ export default function ChatAssistant() {
                 id="rr-assistant-input"
                 ref={inputRef}
                 rows={1}
-                enterKeyHint="send"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={(event) => {
