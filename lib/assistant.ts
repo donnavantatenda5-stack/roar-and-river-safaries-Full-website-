@@ -651,13 +651,20 @@ function tourSummary(tour: Tour): AssistantReply {
 
 function staySummary(stay: Stay): AssistantReply {
   const grade = stay.stars ? `${stay.stars}-star ` : "";
+  const lines = [
+    `${stay.name} — ${grade}${stay.kind.toLowerCase()} in Victoria Falls.`,
+    stay.highlight ?? "Contact our team for property details, availability and current rates.",
+  ];
+  if (stay.rating !== undefined && stay.reviews) {
+    lines.push(`• Guest rating: ${stay.rating.toFixed(1)}/5 from ${stay.reviews} reviews`);
+  }
+  if (stay.amenities?.length) {
+    lines.push(`• On site: ${stay.amenities.join(", ")}`);
+  }
+  lines.push("Nightly rates move with season and room type, so the team confirms the live rate for your dates. No payment is taken online.");
+
   return {
-    text:
-      `${stay.name} — ${grade}${stay.kind.toLowerCase()} in Victoria Falls.\n` +
-      `${stay.highlight}\n` +
-      `• Guest rating: ${stay.rating.toFixed(1)}/5 from ${stay.reviews} reviews\n` +
-      `• On site: ${stay.amenities.join(", ")}\n` +
-      "Nightly rates move with season and room type, so the team confirms the live rate for your dates. No payment is taken online.",
+    text: lines.join("\n"),
     actions: [
       { label: "See the property", href: `/tours/${stay.slug}` },
       { label: "Ask about your dates", send: "WhatsApp" },

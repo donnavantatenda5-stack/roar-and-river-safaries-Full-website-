@@ -83,6 +83,34 @@ body {
   }
 }
 
+@keyframes assistant-icon-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  35% {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+  65% {
+    transform: translateY(-1px) rotate(3deg);
+  }
+}
+
+.assistant-launcher-icon {
+  animation: assistant-icon-idle 3.6s ease-in-out infinite;
+}
+
+.assistant-launcher:hover .assistant-launcher-icon,
+.assistant-launcher:focus-visible .assistant-launcher-icon {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-launcher-icon {
+    animation: none;
+  }
+}
+
 /* ---------------------------------------------------------------- */
 /* Trust strip: a slow news-ticker scroll, matching the site rhythm. */
 /* ---------------------------------------------------------------- */

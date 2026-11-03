@@ -734,23 +734,36 @@ const STAY_DETAILS: Record<string, TourDetail> = Object.fromEntries(
   STAYS.map((stay) => {
     const grade = stay.stars ? `${stay.stars}-star ` : "";
     const kind = stay.kind.toLowerCase();
-    const detail: TourDetail = {
-      summary: stay.highlight,
-      startTime: stay.kind === "Holiday rental" ? "Check-in from 15:00" : "Check-in from 14:00",
-      duration: "Per night",
-      minPax: "",
-      location: "Victoria Falls, Zimbabwe",
-      body: [
-        `${stay.name} is a ${grade}${kind} in Victoria Falls. ${stay.highlight}`,
-        `On site: ${stay.amenities.join(", ")}.`,
-        "We book stays through our local team rather than taking payment on the website. Send your dates, room type and group size and the team will confirm availability and the rate, and can add airport transfers or tours to the same trip.",
-      ],
-      includes: stay.amenities,
-      priceNote: "Rates on request - the team confirms the live rate for your dates.",
-      notes: [
-        `Guest rating ${stay.rating.toFixed(1)}/5 from ${stay.reviews} reviews.`,
-        ...(stay.tags ?? []),
-        "Rates vary by season and room type. No payment is taken online.",
+      const amenities = stay.amenities ?? [];
+      const highlight = stay.highlight ?? "Contact our team for property details, availability and current rates.";
+      const detail: TourDetail = {
+        summary: highlight,
+        startTime:
+          stay.kind === "Accommodation"
+            ? "Check-in details on request"
+            : stay.kind === "Holiday rental"
+              ? "Check-in from 15:00"
+              : "Check-in from 14:00",
+        duration: "Per night",
+        minPax: "",
+        location: "Victoria Falls, Zimbabwe",
+        body: [
+          stay.kind === "Accommodation"
+            ? `${stay.name} is listed as a place to stay in Victoria Falls. ${highlight}`
+            : `${stay.name} is a ${grade}${kind} in Victoria Falls. ${highlight}`,
+          ...(amenities.length > 0
+            ? [`On site: ${amenities.join(", ")}.`]
+            : ["Contact our team for current property details."]),
+          "We book stays through our local team rather than taking payment on the website. Send your dates, room type and group size and the team will confirm availability and the rate, and can add airport transfers or tours to the same trip.",
+        ],
+        includes: amenities.length > 0 ? amenities : undefined,
+        priceNote: "Rates on request - the team confirms the live rate for your dates.",
+        notes: [
+          ...(stay.rating !== undefined && stay.reviews
+            ? [`Guest rating ${stay.rating.toFixed(1)}/5 from ${stay.reviews} reviews.`]
+            : []),
+          ...(stay.tags ?? []),
+          "Rates vary by season and room type. No payment is taken online.",
       ],
     };
     return [stay.slug, detail];

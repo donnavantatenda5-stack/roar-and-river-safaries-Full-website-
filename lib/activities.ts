@@ -78,6 +78,7 @@ const RAW: {
   name: string;
   price: number | null;
   category: ActivityCategory;
+  image?: string;
 }[] = [
   // Adrenaline & Adventure
   { slug: "white-water-rafting", name: "White Water Rafting", price: 173, category: "adrenaline" },
@@ -138,6 +139,7 @@ const RAW: {
     name: s.name,
     price: null,
     category: "accommodation" as const,
+    image: s.image,
   })),
 ];
 
@@ -148,7 +150,7 @@ export const ACTIVITIES: Activity[] = RAW.map((a, i) => ({
   price_usd: a.price,
   category: a.category,
   description: null,
-  image_url: ACTIVITY_IMAGE[a.slug] ?? IMAGE[a.category],
+  image_url: ACTIVITY_IMAGE[a.slug] ?? a.image ?? IMAGE[a.category],
   sort_order: i + 1,
   is_active: true,
 }));

@@ -51,10 +51,15 @@ const ACTIVITY_LIST = ACTIVITIES.filter((a) => a.category !== "accommodation")
   .join("\n");
 
 /** Accommodation is booked by the team, so rates are quoted per date. */
-const STAY_LIST = STAYS.map(
-  (s) =>
-    `- ${s.name} | ${s.stars ? `${s.stars}-star ` : ""}${s.kind.toLowerCase()} | rated ${s.rating.toFixed(1)}/5 from ${s.reviews} reviews | ${s.amenities.join(", ")}`,
-).join("\n");
+const STAY_LIST = STAYS.map((s) => {
+  const details = [
+    s.rating !== undefined && s.reviews
+      ? `rated ${s.rating.toFixed(1)}/5 from ${s.reviews} reviews`
+      : "",
+    s.amenities?.join(", ") ?? "",
+  ].filter(Boolean);
+  return `- ${s.name} | ${s.stars ? `${s.stars}-star ` : ""}${s.kind.toLowerCase()}${details.length ? ` | ${details.join(" | ")}` : ""}`;
+}).join("\n");
 
 const KNOWLEDGE = `BUSINESS
 Name: ${SITE.name}. Base: ${SITE.location}. Local tour operator working with licensed guides and operators.
@@ -354,4 +359,3 @@ export async function POST(req: Request) {
 
   return Response.json({ text }, { headers: { "Cache-Control": "no-store" } });
 }
-

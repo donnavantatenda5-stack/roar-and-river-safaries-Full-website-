@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, CloudSun, Compass, LoaderCircle, MessageCircle, X } from "lucide-react";
+import { ArrowUp, CloudSun, Compass, LoaderCircle, X } from "lucide-react";
 import {
   ASSISTANT_SUGGESTIONS,
   answer,
@@ -335,9 +336,19 @@ export default function Assistant() {
         aria-expanded={open}
         aria-label={open ? "Close River Guide assistant" : "Open River Guide assistant"}
         title="Ask the River Guide"
-        className="fixed bottom-5 right-4 z-[80] flex h-14 w-14 items-center justify-center rounded-full bg-forest text-white shadow-[0_14px_34px_rgba(18,40,26,0.4)] ring-2 ring-sand/60 transition-all hover:-translate-y-0.5 hover:bg-forest-soft sm:right-6 sm:h-16 sm:w-16"
+        className="assistant-launcher fixed bottom-5 right-4 z-[80] flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-forest text-white shadow-[0_14px_34px_rgba(18,40,26,0.4)] ring-2 ring-sand/60 transition-colors hover:bg-forest-soft sm:right-6 sm:h-16 sm:w-16"
       >
-        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6 sm:h-7 sm:w-7" />}
+        {open ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <Image
+            src="/images/assistant-mascot.jpg"
+            alt=""
+            width={736}
+            height={552}
+            className="assistant-launcher-icon h-full w-full object-cover"
+          />
+        )}
         {!open && !seen && (
           <span className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full bg-gold ring-2 ring-ivory" />
         )}

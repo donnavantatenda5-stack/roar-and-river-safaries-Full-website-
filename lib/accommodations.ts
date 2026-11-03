@@ -15,6 +15,7 @@ export type StayKind =
   | "Guest lodge"
   | "Guest house"
   | "Lodge"
+  | "Accommodation"
   | "Campsite"
   | "Backpackers"
   | "Holiday rental";
@@ -22,16 +23,17 @@ export type StayKind =
 export type Stay = {
   slug: string;
   name: string;
+  image?: string;
   kind: StayKind;
   /** Official star grading where the property has one. */
   stars?: 2 | 3 | 4 | 5;
   /** Guest score out of 5. */
-  rating: number;
+  rating?: number;
   /** Review count exactly as shown publicly, e.g. "1.2k". */
-  reviews: string;
-  amenities: string[];
+  reviews?: string;
+  amenities?: string[];
   /** One-line description used on the cards and detail page. */
-  highlight: string;
+  highlight?: string;
   /** Extra tags shown in the detail page notes (child-friendly, accessible...). */
   tags?: string[];
 };
@@ -120,6 +122,7 @@ export const STAYS: Stay[] = [
   {
     slug: "victoria-falls-rainbow-hotel",
     name: "Victoria Falls Rainbow Hotel",
+    image: "/images/accommodations/victoria-falls-rainbow-hotel.webp",
     kind: "Hotel",
     stars: 3,
     rating: 4.1,
@@ -140,6 +143,7 @@ export const STAYS: Stay[] = [
   {
     slug: "ilala-lodge-hotel",
     name: "Ilala Lodge Hotel",
+    image: "/images/accommodations/ilala-lodge-hotel.webp",
     kind: "Hotel",
     stars: 4,
     rating: 4.6,
@@ -161,6 +165,7 @@ export const STAYS: Stay[] = [
   {
     slug: "victoria-falls-safari-club",
     name: "Victoria Falls Safari Club",
+    image: "/images/accommodations/victoria-falls-safari-club.jpg",
     kind: "Hotel",
     stars: 5,
     rating: 4.6,
@@ -181,6 +186,7 @@ export const STAYS: Stay[] = [
   {
     slug: "bayete-guest-lodge",
     name: "Bayete Guest Lodge",
+    image: "/images/accommodations/bayete-guest-lodge.jpg",
     kind: "Guest lodge",
     stars: 4,
     rating: 4.5,
@@ -201,6 +207,7 @@ export const STAYS: Stay[] = [
   {
     slug: "shongwe-lookout",
     name: "Shongwe Lookout",
+    image: "/images/accommodations/shongwe-lookout.webp",
     kind: "Lodge",
     stars: 4,
     rating: 4.6,
@@ -241,6 +248,7 @@ export const STAYS: Stay[] = [
   {
     slug: "nkosi-guest-lodge",
     name: "Nkosi Guest Lodge",
+    image: "/images/accommodations/nkosi-guest-lodge.jpg",
     kind: "Guest lodge",
     stars: 5,
     rating: 4.6,
@@ -260,6 +268,7 @@ export const STAYS: Stay[] = [
   {
     slug: "zambezi-family-lodge",
     name: "Zambezi Family Lodge",
+    image: "/images/accommodations/zambezi-family-lodge.jpg",
     kind: "Lodge",
     rating: 4.9,
     reviews: "344",
@@ -299,6 +308,7 @@ export const STAYS: Stay[] = [
   {
     slug: "zambezi-boutique-guesthouse",
     name: "Zambezi Boutique Guesthouse",
+    image: "/images/accommodations/zambezi-boutique-guesthouse.jpg",
     kind: "Guest house",
     rating: 4.8,
     reviews: "102",
@@ -319,6 +329,7 @@ export const STAYS: Stay[] = [
   {
     slug: "victoria-falls-backpackers-lodge",
     name: "Victoria Falls Backpackers Lodge",
+    image: "/images/accommodations/victoria-falls-backpackers-lodge.jpg",
     kind: "Backpackers",
     stars: 2,
     rating: 4.2,
@@ -339,6 +350,7 @@ export const STAYS: Stay[] = [
   {
     slug: "batonka-guest-lodge",
     name: "Batonka Guest Lodge",
+    image: "/images/accommodations/batonka-guest-lodge.jpg",
     kind: "Guest lodge",
     stars: 4,
     rating: 4.7,
@@ -359,6 +371,7 @@ export const STAYS: Stay[] = [
   {
     slug: "lokuthula-lodges",
     name: "Lokuthula Lodges",
+    image: "/images/accommodations/lokuthula-lodges.webp",
     kind: "Lodge",
     stars: 3,
     rating: 4.6,
@@ -380,6 +393,7 @@ export const STAYS: Stay[] = [
   {
     slug: "victoria-falls-oasis-hotel",
     name: "Victoria Falls Oasis Hotel",
+    image: "/images/accommodations/victoria-falls-oasis-hotel.jpg",
     kind: "Hotel",
     rating: 4.5,
     reviews: "42",
@@ -420,6 +434,7 @@ export const STAYS: Stay[] = [
   {
     slug: "the-pods-victoria-falls",
     name: "The Pods Victoria Falls",
+    image: "/images/accommodations/the-pods-victoria-falls.jpg",
     kind: "Holiday rental",
     rating: 5,
     reviews: "25",
@@ -437,5 +452,54 @@ export const STAYS: Stay[] = [
     highlight:
       "Compact pod-style stays for two with a kitchen and access to a shared outdoor pool.",
     tags: ["Whole home", "Couples"],
+  },
+  {
+    slug: "drift-inn",
+    name: "Drift Inn",
+    image: "/images/accommodations/drift-inn.jpg",
+    kind: "Accommodation",
+    highlight: "Contact our team for property details, availability and current rates.",
+  },
+  {
+    slug: "living-stone-lodge",
+    name: "Living Stone Lodge",
+    image: "/images/accommodations/living-stone-lodge.jpg",
+    kind: "Accommodation",
+    highlight: "Contact our team for property details, availability and current rates.",
+  },
+  {
+    slug: "mbano-manor-hotel-victoria-falls",
+    name: "Mbano Manor Hotel Victoria Falls",
+    image: "/images/accommodations/mbano-manor-hotel-victoria-falls.jpg",
+    kind: "Accommodation",
+    highlight: "Contact our team for property details, availability and current rates.",
+  },
+  {
+    slug: "mopani-lodge-victoria-falls",
+    name: "Mopani Lodge Victoria Falls",
+    image: "/images/accommodations/mopani-lodge-victoria-falls.jpg",
+    kind: "Accommodation",
+    highlight: "Contact our team for property details, availability and current rates.",
+  },
+  {
+    slug: "phezulu-guest-lodge",
+    name: "PheZulu Guest Lodge",
+    image: "/images/accommodations/phezulu-guest-lodge.jpg",
+    kind: "Accommodation",
+    highlight: "Contact our team for property details, availability and current rates.",
+  },
+  {
+    slug: "pioneers-lodge",
+    name: "Pioneers Lodge",
+    image: "/images/accommodations/pioneers-lodge.jpg",
+    kind: "Accommodation",
+    highlight: "Contact our team for property details, availability and current rates.",
+  },
+  {
+    slug: "shongwe-oasis",
+    name: "Shongwe Oasis",
+    image: "/images/accommodations/shongwe-oasis.jpg",
+    kind: "Accommodation",
+    highlight: "Contact our team for property details, availability and current rates.",
   },
 ];
