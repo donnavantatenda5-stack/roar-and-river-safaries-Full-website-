@@ -3,7 +3,7 @@ import Link from "next/link";
 import Container from "@/components/ui/Container";
 import PalmSketch from "@/components/PalmSketch";
 import { SHORT_NAMES } from "@/lib/tours";
-import { SITE } from "@/lib/site";
+import { GOOGLE_MAPS_DIRECTIONS_URL, LOCATION, SITE } from "@/lib/site";
 import type { Tour } from "@/lib/types";
 
 const company = [
@@ -22,6 +22,31 @@ export default function Footer({ tours }: { tours: Tour[] }) {
     <footer id="contact" className="bg-forest text-white">
       <Container className="pt-20">
         {/* Contact details (email, phones, WhatsApp) live in the nav's Contact panel. */}
+
+        <section aria-labelledby="location-heading" className="mb-20">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+            <h2 id="location-heading" className="font-serif text-2xl font-bold sm:text-3xl">
+              Find us
+            </h2>
+            <a
+              href={GOOGLE_MAPS_DIRECTIONS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-bold text-sand underline underline-offset-4 transition-colors hover:text-white"
+            >
+              Get Directions
+            </a>
+          </div>
+          <div className="h-[260px] w-full overflow-hidden rounded-2xl border border-white/15 sm:h-[340px] lg:h-[400px]">
+            <iframe
+              title={`Map showing ${LOCATION.address}`}
+              src={`https://www.google.com/maps?q=${LOCATION.latitude}%2C${LOCATION.longitude}&z=15&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-full w-full border-0"
+            />
+          </div>
+        </section>
 
         {/* Logo + link columns sit left; the palm etching takes the right-hand side. */}
         <div className="flex flex-col gap-14 md:flex-row md:items-start md:gap-8 lg:gap-12">

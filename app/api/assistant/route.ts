@@ -3,9 +3,9 @@ import { ACTIVITY_DETAILS } from "@/lib/activityDetails";
 import { STAYS } from "@/lib/accommodations";
 import { FALLBACK_TOURS } from "@/lib/tours";
 import { TOUR_DETAILS } from "@/lib/tourDetails";
-import { CONTACT, SITE } from "@/lib/site";
+import { CONTACT, GOOGLE_MAPS_DIRECTIONS_URL, LOCATION, SITE } from "@/lib/site";
 import { formatPrice } from "@/lib/types";
-import { getWeather, weatherInfo } from "@/lib/assistant";
+import { getWeather, isWeatherQuestion, weatherInfo } from "@/lib/assistant";
 
 /**
  * Server-side proxy for the River Guide assistant.
@@ -70,6 +70,7 @@ Contact (use these exact details, no others):
 
 WEBSITE PAGES
 - / home, destinations gallery (/#destinations), about and why-us (/#about)
+- Location map at /#location-heading: ${LOCATION.address}, fixed at ${LOCATION.latitude}, ${LOCATION.longitude}. Get Directions URL: ${GOOGLE_MAPS_DIRECTIONS_URL}. Never use or infer the visitor's current location.
 - /tours all signature tours and activities, plus the Accommodation group at /tours#activities-accommodation
 - /tours/<slug> full detail page (itinerary, included items, fees, meeting point, or property amenities and rating)
 - /book booking form; /book?tour=<slug> pre-selects that tour
@@ -101,6 +102,7 @@ THINK FIRST (most important)
 HELPING VISITORS USE THE WEBSITE
 - You can answer anything about this website: its pages and sections, the tours and activities listed, prices, what is included, how the booking form works, where to find things, and what happens after a request is sent.
 - Always finish with a clear next action: the page to open and what to do once there. Use the real page paths, for example "open /tours, pick the tour, then Book" or "open /book?tour=zambezi-sunset-cruise, add your date and group size, and send the request".
+- For directions or location questions, give the fixed address ${LOCATION.address}, and direct visitors to the Get Directions button for the exact map pin. Never use or infer the visitor's location.
 - If they ask what to do next, give a short ordered plan of 2-4 steps using real page paths and tour names.
 - Do not just name a page; say what they will find there and why it fits their question.
 
@@ -176,8 +178,8 @@ function clientIp(req: Request): string {
 /* Prompt helpers                                                             */
 /* -------------------------------------------------------------------------- */
 
-async function weatherBlock(): Promise<string> {
-  const weather = await getWeather();
+async function weatherBlock(force = false): Promise<string> {
+  const weather = await getWeather(force);
   if (!weather) {
     return "LIVE WEATHER\nUnavailable right now. Do not invent conditions; offer to have the team check.";
   }
@@ -250,7 +252,14 @@ export async function POST(req: Request) {
   }
 
   const history = sanitiseHistory(body.history);
-  const system = `${PERSONA}\n\n${KNOWLEDGE}\n\n${await weatherBlock()}`;
+  const needsWeather =
+    isWeatherQuestion(message) ||
+    history.some((turn) => isWeatherQuestion(turn.text)) ||
+    /\b(recommend|suit|best activity|what should we do|which activity)\b/i.test(message);
+  const liveWeather = needsWeather
+    ? await weatherBlock(true)
+    : "LIVE WEATHER\nNot requested. Do not infer or invent weather conditions.";
+  const system = `${PERSONA}\n\n${KNOWLEDGE}\n\n${liveWeather}`;
 
   const contents = [
     ...history.map((m) => ({
@@ -279,7 +288,7 @@ export async function POST(req: Request) {
   // - it is just a considered one. Override with GEMINI_THINKING_BUDGET
   // (0 disables it).
   const requested = Number(process.env.GEMINI_THINKING_BUDGET);
-  const wanted = Number.isFinite(requested) ? Math.round(requested) : 2048;
+  const wanted = Number.isFinite(requested) ? Math.round(requested) : 0;
   const thinkingBudget = modelBudget(wanted);
 
   function payloadFor(model: string) {
@@ -291,7 +300,7 @@ export async function POST(req: Request) {
       generationConfig: {
         temperature: 0.6,
         topP: 0.9,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 1024,
         ...(supportsThinking ? { thinkingConfig: { thinkingBudget: budget } } : {}),
       },
       safetySettings: [
@@ -316,7 +325,7 @@ export async function POST(req: Request) {
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify(payloadFor(model)),
         cache: "no-store",
-        signal: AbortSignal.timeout(25_000),
+        signal: AbortSignal.timeout(12_000),
       });
 
       if (res.ok) {
@@ -333,6 +342,7 @@ export async function POST(req: Request) {
       break;
     } catch (error) {
       console.error("[assistant] request failed", model, error);
+      break;
     }
   }
 

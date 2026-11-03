@@ -73,6 +73,7 @@ async function askAssistantApi(message: string, history: ChatTurn[]): Promise<st
 
 /** Channel picks stay deterministic so the phone/email details are always exact. */
 const CHANNEL_PICK = /^(whatsapp|call|phone|email|mail)\b/i;
+const LAUNCH_MESSAGE = "Hi We Are Roar And River Safaris Ask For More Info";
 
 export default function Assistant() {
   const [open, setOpen] = useState(false);
@@ -81,7 +82,6 @@ export default function Assistant() {
   const [weather, setWeather] = useState<WeatherReport | null>(null);
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [typing, setTyping] = useState(false);
-  const [seen, setSeen] = useState(false);
 
   const weatherRef = useRef<WeatherReport | null>(null);
   const promiseRef = useRef<Promise<WeatherReport | null> | null>(null);
@@ -90,11 +90,11 @@ export default function Assistant() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const loadWeather = useCallback((): Promise<WeatherReport | null> => {
-    if (weatherRef.current) return Promise.resolve(weatherRef.current);
+  const loadWeather = useCallback((force = false): Promise<WeatherReport | null> => {
+    if (!force && weatherRef.current) return Promise.resolve(weatherRef.current);
     if (promiseRef.current) return promiseRef.current;
     setLoadingWeather(true);
-    const promise = getWeather()
+    const promise = getWeather(force)
       .then((data) => {
         weatherRef.current = data;
         setWeather(data);
@@ -112,12 +112,13 @@ export default function Assistant() {
     idRef.current += 1;
     const id = `m${idRef.current}`;
     setMessages((prev) => [...prev, { ...message, id }]);
+    return id;
   }, []);
 
   // Fetch the forecast as soon as the panel opens, and focus the input.
   useEffect(() => {
     if (!open) return;
-    void loadWeather();
+    void loadWeather(true);
     void probeAssistant();
     const raf = requestAnimationFrame(() => inputRef.current?.focus());
     return () => cancelAnimationFrame(raf);
@@ -149,12 +150,22 @@ export default function Assistant() {
       setInput("");
       append({ role: "user", text });
 
-      // Weather questions need the live forecast; fetch it before answering.
-      if (isWeatherQuestion(text) && !weatherRef.current) {
-        setTyping(true);
-        append({ role: "assistant", text: "One moment — checking the live forecast for Victoria Falls…" });
-        await loadWeather();
-        setTyping(false);
+      const transactional = /\b(price|cost|how much|book|booking|reserve|reservation|availability|available|fee|usd)\b/i.test(
+        text,
+      );
+      if (isWeatherQuestion(text) && !transactional) {
+        const responseId = append({
+          role: "assistant",
+          text: "Checking the live Victoria Falls forecast now…",
+        });
+        const liveWeather = await loadWeather(true);
+        const reply = answer(text, liveWeather);
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === responseId ? { ...message, ...reply } : message,
+          ),
+        );
+        return;
       }
 
       const local = answer(text, weatherRef.current);
@@ -165,6 +176,12 @@ export default function Assistant() {
         return;
       }
 
+      const responseId = append({
+        role: "assistant",
+        text: local.text,
+        actions: local.actions,
+        weather: local.weather,
+      });
       const history: ChatTurn[] = messages
         .filter((m) => !m.text.startsWith("One moment —"))
         .slice(-8)
@@ -174,8 +191,13 @@ export default function Assistant() {
       const ai = await askAssistantApi(text, history);
       setTyping(false);
 
-      // The model writes the prose; local logic still supplies the UI actions.
-      append({ role: "assistant", text: ai ?? local.text, actions: local.actions, weather: local.weather });
+      if (ai) {
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === responseId ? { ...message, text: ai } : message,
+          ),
+        );
+      }
     },
     [append, messages, input, loadWeather],
   );
@@ -330,17 +352,24 @@ export default function Assistant() {
         ref={buttonRef}
         type="button"
         onClick={() => {
-          setOpen((v) => !v);
-          setSeen(true);
+          if (open) {
+            setOpen(false);
+            return;
+          }
+
+          setOpen(true);
+          void handleSend(LAUNCH_MESSAGE);
         }}
         aria-expanded={open}
         aria-label={open ? "Close River Guide assistant" : "Open River Guide assistant"}
         title="Ask the River Guide"
-        className="assistant-launcher fixed bottom-5 right-4 z-[80] flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-forest text-white shadow-[0_14px_34px_rgba(18,40,26,0.4)] ring-2 ring-sand/60 transition-colors hover:bg-forest-soft sm:right-6 sm:h-16 sm:w-16"
+        className="assistant-launcher group fixed bottom-5 right-4 z-[80] flex h-14 w-14 items-center justify-center overflow-visible rounded-full bg-forest text-white shadow-[0_14px_34px_rgba(18,40,26,0.4)] ring-2 ring-sand/60 transition-colors hover:bg-forest-soft sm:right-6 sm:h-16 sm:w-16"
       >
-        {open ? (
-          <X className="h-6 w-6" />
-        ) : (
+        <span className="pointer-events-none absolute bottom-full right-0 mb-2 w-max max-w-[min(16rem,calc(100vw-2rem))] rounded-2xl border border-line bg-white/95 px-3 py-2 text-left text-[11px] font-medium leading-snug text-forest opacity-0 shadow-[0_10px_28px_rgba(18,40,26,0.12)] backdrop-blur-sm transition-all duration-200 group-hover:opacity-100">
+          {LAUNCH_MESSAGE}
+        </span>
+
+        <span className="absolute inset-0 overflow-hidden rounded-full">
           <Image
             src="/images/assistant-mascot.jpg"
             alt=""
@@ -348,10 +377,7 @@ export default function Assistant() {
             height={552}
             className="assistant-launcher-icon h-full w-full object-cover"
           />
-        )}
-        {!open && !seen && (
-          <span className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full bg-gold ring-2 ring-ivory" />
-        )}
+        </span>
       </button>
     </>
   );

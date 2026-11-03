@@ -4,7 +4,7 @@ import { STAYS } from "@/lib/accommodations";
 import { FALLBACK_TOURS, SHORT_NAMES } from "@/lib/tours";
 import { TOUR_DETAILS, type TourDetail } from "@/lib/tourDetails";
 import { formatPrice, type Tour } from "@/lib/types";
-import { CONTACT, SITE } from "@/lib/site";
+import { CONTACT, GOOGLE_MAPS_DIRECTIONS_URL, LOCATION, SITE } from "@/lib/site";
 
 /* -------------------------------------------------------------------------- */
 /* Catalogue                                                                  */
@@ -810,14 +810,8 @@ function recommendationReply(raw: string, weather: WeatherReport | null, now: Da
     }
   }
 
-  const month = now.getMonth() + 1;
-  const rainy = month >= 11 || month <= 3;
   return {
-    text:
-      (rainy
-        ? "November to March is the green, rainy season: the Falls are at their fullest and the rainforest is lush. Short afternoon storms are common, and some river activities depend on water levels."
-        : "April to October is the dry season: the best time for game viewing, with clear skies and cooler evenings from June to August. The Falls are fullest around April–May.") +
-      "\n\nWant a weather-based pick for a specific day? Ask me “What suits tomorrow?” and I’ll check the live forecast.",
+    text: "I can’t make a weather-based recommendation without a live Victoria Falls forecast, and I don’t want to guess. Please try the live forecast again shortly.",
     actions: [
       { label: "Check today's weather", send: "What suits today's weather?" },
       { label: "See all tours", href: "/tours" },
@@ -854,10 +848,25 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   const asksList = /(list|all tours|what tours|tours do you|activities do you|options|packages|things you offer)/.test(t);
   const asksGallery = /(gallery|photos|pictures|images|see the site|website)/.test(t);
   const asksHelp = /(what can you do|how can you help|who are you|what do you know|help)/.test(t);
+  const asksDirections =
+    /(directions?|google maps|map|address|your location|where (are|is) (you|your office)|where can i find you|where are you (based|located)|how (do|can) i get (to (you|your office|your location)|there)|how to find you|find (you|your office))/.test(
+      t,
+    );
   const asksStay =
     /(hotel|lodge|guest ?house|guesthouse|accommodation|accommodate|where (can|should|do) (i|we) (stay|sleep)|places? to stay|where to stay|to stay|stay near|stay in|staying|room|campsite|camping|backpackers|cottage|villa|self cater|self-cater|book a stay)/.test(
       t,
     );
+
+  if (asksDirections) {
+    return {
+      text:
+        `We are at ${LOCATION.address}. Use Get Directions to open the fixed location in Google Maps, or view the map in the Find us section at the bottom of this page.`,
+      actions: [
+        { label: "Get Directions", href: GOOGLE_MAPS_DIRECTIONS_URL, external: true },
+        { label: "View map on this page", href: "/#location-heading" },
+      ],
+    };
+  }
 
   // 1. Negotiation always goes to a human, with channel choice.
   if (negotiate) {
@@ -971,14 +980,8 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   if (!transactional) {
     if (asksWeather && weather) return weatherReply(t, weather, now);
     if (asksWeather && !weather) {
-      const month = now.getMonth() + 1;
-      const rainy = month >= 11 || month <= 3;
       return {
-        text:
-          "I could not reach the live forecast from this device. " +
-          (rainy
-            ? "It is the rainy season (Nov–Mar), so expect warm days and short afternoon storms; the Falls are at their fullest."
-            : "It is the dry season (Apr–Oct), so expect clear skies, warm days and cooler evenings from June to August."),
+        text: "I couldn’t retrieve a live Victoria Falls forecast just now, so I can’t confirm the current conditions. Please try again shortly.",
         actions: [
           { label: "Try the forecast again", send: "What suits today's weather?" },
           { label: "See all tours", href: "/tours" },
