@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 import { whatsappHref } from "@/lib/site";
 
 const steps = [
-  { title: "Choose your tour", text: "Pick from our six tours." },
+  { title: "Choose your tour", text: "Pick from our signature tours." },
   { title: "Send us a message", text: "Tell us your date and group size." },
   { title: "Enjoy the adventure", text: "Meet your local guide and go." },
 ];

@@ -25,7 +25,7 @@ export default function Footer({ tours }: { tours: Tour[] }) {
 
         {/* Logo + link columns sit left; the palm etching takes the right-hand side. */}
         <div className="flex flex-col gap-14 md:flex-row md:items-start md:gap-8 lg:gap-12">
-          <div className="grid flex-1 gap-12 md:grid-cols-[1.5fr_1.1fr_0.8fr_0.8fr] md:pr-8 lg:pr-10">
+          <div className="grid min-w-0 flex-1 gap-12 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1.1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)] md:pr-8 lg:pr-10">
           <div>
             <span className="flex h-[92px] w-[92px] items-center justify-center rounded-full bg-white">
               <Image src="/logo.png" alt="Roar and River Safaris" width={703} height={606} className="h-[58px] w-auto" />

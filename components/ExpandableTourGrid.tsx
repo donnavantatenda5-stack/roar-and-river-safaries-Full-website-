@@ -59,8 +59,8 @@ function Grid({ tours }: { tours: Tour[] }) {
   return (
     <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {tours.map((t) => (
-        <li key={t.slug}>
-          <Tilt3D>
+        <li key={t.slug} className="min-w-0">
+          <Tilt3D className="min-w-0">
             <Link
               href={`/tours/${t.slug}`}
               className="group flex h-full flex-col overflow-hidden rounded-[18px] border border-line bg-white shadow-[0_14px_36px_rgba(30,40,30,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(30,40,30,0.16)]"
@@ -75,7 +75,7 @@ function Grid({ tours }: { tours: Tour[] }) {
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-forest/10 to-forest/35" />
               </div>
-              <div className="flex flex-1 flex-col p-7">
+              <div className="flex flex-1 flex-col p-5 sm:p-7">
                 <h3 className="font-serif text-[1.5rem] font-bold leading-snug text-forest">
                   {t.name}
                 </h3>

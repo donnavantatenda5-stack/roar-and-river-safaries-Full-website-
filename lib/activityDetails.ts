@@ -1,4 +1,5 @@
 ﻿import type { TourDetail } from "@/lib/tourDetails";
+import { STAYS } from "@/lib/accommodations";
 
 /**
  * Detail content for the activities in lib/activities.ts.
@@ -7,7 +8,7 @@
  * Prices are published 2026 rate-card figures; park and conservation levies sit
  * under `governmentFees` rather than being folded into the headline price.
  */
-export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
+const ACTIVITY_CONTENT: Record<string, TourDetail> = {
   "white-water-rafting": {
     summary: "A full day on the Upper Zambezi, Grade 5 rapids with a calm float downstream.",
     startTime: "07:30",
@@ -721,4 +722,42 @@ export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
     priceNote: "Children $29, or $69 including transfers",
     notes: ["Minimum 2 guests", "Dinner choice is set", "Non-alcoholic options throughout"],
   },
+};
+
+/**
+ * Detail pages for the accommodation in lib/accommodations.ts.
+ *
+ * Generated so a new property only has to be added in one place. Nightly
+ * rates are deliberately not published: the team confirms them per date.
+ */
+const STAY_DETAILS: Record<string, TourDetail> = Object.fromEntries(
+  STAYS.map((stay) => {
+    const grade = stay.stars ? `${stay.stars}-star ` : "";
+    const kind = stay.kind.toLowerCase();
+    const detail: TourDetail = {
+      summary: stay.highlight,
+      startTime: stay.kind === "Holiday rental" ? "Check-in from 15:00" : "Check-in from 14:00",
+      duration: "Per night",
+      minPax: "",
+      location: "Victoria Falls, Zimbabwe",
+      body: [
+        `${stay.name} is a ${grade}${kind} in Victoria Falls. ${stay.highlight}`,
+        `On site: ${stay.amenities.join(", ")}.`,
+        "We book stays through our local team rather than taking payment on the website. Send your dates, room type and group size and the team will confirm availability and the rate, and can add airport transfers or tours to the same trip.",
+      ],
+      includes: stay.amenities,
+      priceNote: "Rates on request - the team confirms the live rate for your dates.",
+      notes: [
+        `Guest rating ${stay.rating.toFixed(1)}/5 from ${stay.reviews} reviews.`,
+        ...(stay.tags ?? []),
+        "Rates vary by season and room type. No payment is taken online.",
+      ],
+    };
+    return [stay.slug, detail];
+  }),
+);
+
+export const ACTIVITY_DETAILS: Record<string, TourDetail> = {
+  ...ACTIVITY_CONTENT,
+  ...STAY_DETAILS,
 };

@@ -31,7 +31,10 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
 
   const detail = tourDetail(tour.slug);
   const all = await getAllTours();
-  const others = all.filter((t) => t.slug !== tour.slug).slice(0, 3);
+  const isStay = tour.price_usd === null;
+  const others = all
+    .filter((t) => t.slug !== tour.slug && (t.price_usd === null) === isStay)
+    .slice(0, 3);
   const name = SHORT_NAMES[tour.slug] ?? tour.name;
 
   return (
@@ -51,10 +54,10 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
 
         <Container className="pb-16">
           <Link
-            href="/tours"
+            href={isStay ? "/tours#activities-accommodation" : "/tours"}
             className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-[0.22em] text-white/85 transition-colors hover:text-white"
           >
-            <ArrowLeft className="h-4 w-4" strokeWidth={2.4} /> All tours
+            <ArrowLeft className="h-4 w-4" strokeWidth={2.4} /> {isStay ? "All stays" : "All tours"}
           </Link>
 
           <p className="mt-8 text-[13px] font-bold uppercase tracking-[0.32em] text-sand">
@@ -96,7 +99,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                 <>
                   <Reveal>
                     <h2 className="font-serif text-[clamp(1.7rem,3.2vw,2.5rem)] font-bold leading-tight text-forest">
-                      About this tour
+                      {isStay ? "About this stay" : "About this tour"}
                     </h2>
                   </Reveal>
                   <div className="mt-8 space-y-6">
@@ -110,7 +113,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                   {detail.includes && detail.includes.length > 0 && (
                     <Reveal className="mt-14">
                       <h2 className="font-serif text-[clamp(1.5rem,2.6vw,2rem)] font-bold text-forest">
-                        What&apos;s included
+                        {isStay ? "Amenities" : "What's included"}
                       </h2>
                       <ul className="mt-7 grid gap-4 sm:grid-cols-2">
                         {detail.includes.map((item) => (
@@ -186,14 +189,18 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
               ) : (
                 <Reveal>
                   <div className="rounded-[18px] border border-line bg-white p-9">
-                    <h2 className="font-serif text-[1.9rem] font-bold text-forest">About this tour</h2>
+                    <h2 className="font-serif text-[1.9rem] font-bold text-forest">
+                      {isStay ? "About this stay" : "About this tour"}
+                    </h2>
                     <p className="mt-5 text-[17px] leading-[1.75] text-muted">
-                      Full details for this tour are on the way. Message us and we&apos;ll send you the
-                      itinerary, timings and what&apos;s included, or book straight away and we&apos;ll
-                      confirm the details with you.
+                      {isStay
+                        ? "Full details for this property are on the way. Message us and we will send you the room types, amenities and the rate for your dates."
+                        : "Full details for this tour are on the way. Message us and we'll send you the itinerary, timings and what's included, or book straight away and we'll confirm the details with you."}
                     </p>
                     <div className="mt-8 flex flex-wrap gap-3">
-                      <ButtonLink href={`/book?tour=${tour.slug}`}>Book this tour</ButtonLink>
+                      <ButtonLink href={`/book?tour=${tour.slug}`}>
+                        {isStay ? "Request these dates" : "Book this tour"}
+                      </ButtonLink>
                       <ButtonLink href="/#contact" variant="outline" className="!border-forest !text-forest hover:!bg-forest/5">
                         Contact us
                       </ButtonLink>
@@ -220,7 +227,11 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
       {others.length > 0 && (
         <section className="py-20">
           <Container>
-            <SectionHeading eyebrow="Keep exploring" title="Other tours" underline />
+            <SectionHeading
+              eyebrow="Keep exploring"
+              title={isStay ? "Other places to stay" : "Other tours"}
+              underline
+            />
             <div className="mt-14 grid gap-6 md:grid-cols-3">
               {others.map((t, i) => (
                 <Reveal key={t.slug} delay={i * 0.08}>
@@ -252,8 +263,12 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
             </div>
 
 <Reveal className="mt-14 flex justify-center">
-            <ButtonLink href="/#tours" variant="outline" className="!border-forest !text-forest hover:!bg-forest/5">
-              See all {all.length} tours and activities
+            <ButtonLink
+              href={isStay ? "/tours#activities-accommodation" : "/tours"}
+              variant="outline"
+              className="!border-forest !text-forest hover:!bg-forest/5"
+            >
+              {isStay ? "See all places to stay" : `See all ${all.length} tours and activities`}
             </ButtonLink>
           </Reveal>
           </Container>

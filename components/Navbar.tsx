@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CONTACT } from "@/lib/site";
 
 const links = [
   { label: "Home", href: "/" },
@@ -13,12 +14,9 @@ const links = [
   { label: "Gallery", href: "/#destinations" },
 ];
 
-const CONTACT_EMAIL = "donnavantatenda5@gmail.com";
-const CONTACT_NUMBERS = [
-  { display: "+263 773 473 009", tel: "+263773473009", wa: "263773473009" },
-  { display: "+263 775418768", tel: "+263775418768", wa: "263775418768" },
-];
-const waMain = "263786043129";
+const CONTACT_EMAIL = CONTACT.email;
+const CONTACT_NUMBERS = CONTACT.phones;
+const waMain = CONTACT.whatsapp;
 
 const itemBtn =
   "border-0 text-[#5c625f] transition-colors hover:text-forest";
@@ -104,7 +102,7 @@ export default function Navbar() {
         <nav
           aria-label="Main"
           className={cn(
-            "flex items-center justify-between gap-4 paper-surface py-2.5 pl-6 pr-3 md:gap-0 md:pl-10 md:pr-3.5 motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "flex items-center justify-between gap-4 paper-surface py-2.5 pl-6 pr-3 md:gap-0 md:pl-6 md:pr-3.5 lg:pl-10 motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
             docked
               ? "rounded-none shadow-[0_8px_28px_rgba(12,24,18,0.12)]"
               : "rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.18)]"
@@ -121,7 +119,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <span className="mx-11 hidden h-11 w-px bg-[#ded2b8] md:block" aria-hidden="true" />
+          <span className="mx-5 hidden h-11 w-px bg-[#ded2b8] md:block lg:mx-11" aria-hidden="true" />
 
           <ul className="hidden items-center gap-8 text-[17px] md:flex lg:gap-[42px]">
             {links.map((l, i) => (
@@ -153,7 +151,7 @@ export default function Navbar() {
             </li>
           </ul>
 
-          <div className={cn("flex shrink-0 items-center gap-2", docked ? "ml-auto" : "md:ml-[46px]")}>
+          <div className={cn("flex shrink-0 items-center gap-2", docked ? "ml-auto" : "md:ml-4 lg:ml-[46px]")}>
             <Link
               href="/book"
               className={cn(

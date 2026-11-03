@@ -2,7 +2,7 @@ export type Tour = {
   id: string;
   slug: string;
   name: string;
-  price_usd: number | null; // null = "Book with us"
+  price_usd: number | null; // null = rates on request (accommodation)
   description: string | null;
   image_url: string | null;
   sort_order: number;
@@ -10,5 +10,5 @@ export type Tour = {
 };
 
 export function formatPrice(price: number | null): string {
-  return price === null ? "Book with us" : `$${Number(price)}`;
+  return price === null ? "Rates on request" : `$${Number(price)}`;
 }

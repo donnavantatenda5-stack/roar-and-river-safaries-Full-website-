@@ -1,4 +1,5 @@
 import type { Tour } from "@/lib/types";
+import { STAYS } from "@/lib/accommodations";
 
 /** The four groupings shown in the Activities section. */
 export type ActivityCategory = "adrenaline" | "wildlife" | "scenic" | "cultural" | "accommodation";
@@ -75,7 +76,7 @@ const ACTIVITY_IMAGE: Record<string, string> = {
 const RAW: {
   slug: string;
   name: string;
-  price: number;
+  price: number | null;
   category: ActivityCategory;
 }[] = [
   // Adrenaline & Adventure
@@ -128,8 +129,16 @@ const RAW: {
   { slug: "shopping-tour", name: "Shopping", price: 30, category: "cultural" },
   { slug: "livingstone-city-tour-museum", name: "Livingstone City Tour & Museum", price: 190, category: "cultural" },
 
-  // Accommodation
+  // Accommodation. Mollynelly is our own guesthouse; the rest are booked
+  // through the team and priced on request (null), because nightly rates move
+  // with season and room type.
   { slug: "mollynelly-guesthouse", name: "Mollynelly Guesthouse", price: 220, category: "accommodation" },
+  ...STAYS.map((s) => ({
+    slug: s.slug,
+    name: s.name,
+    price: null,
+    category: "accommodation" as const,
+  })),
 ];
 
 export const ACTIVITIES: Activity[] = RAW.map((a, i) => ({

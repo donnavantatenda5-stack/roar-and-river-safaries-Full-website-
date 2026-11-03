@@ -16,18 +16,25 @@ export default function TourBookingCard({
   priceNote?: string;
   variants?: { label: string; priceUsd: number }[];
 }) {
-  const wa = whatsappHref(`Hi! I'd like to book the ${title} with Roar and River Safaris.`);
+  const isStay = tour.price_usd === null;
+  const wa = whatsappHref(
+    isStay
+      ? `Hi! I'd like to ask about ${title} with Roar and River Safaris.`
+      : `Hi! I'd like to book the ${title} with Roar and River Safaris.`,
+  );
 
   return (
     <div className="rounded-[22px] bg-forest p-8 text-white shadow-[0_20px_50px_rgba(18,40,26,0.28)]">
       <p className="text-[12px] font-bold uppercase tracking-[0.28em] text-sand">Price</p>
       <p className="mt-3 flex items-baseline gap-2">
-        <span className="font-serif text-[3.2rem] font-bold leading-none text-white">
+        <span
+          className={`font-serif font-bold leading-none text-white ${
+            isStay ? "text-[2.1rem]" : "text-[3.2rem]"
+          }`}
+        >
           {formatPrice(tour.price_usd)}
         </span>
-        {tour.price_usd !== null && (
-          <span className="text-[17px] text-[#bed0bd]">per person</span>
-        )}
+        {!isStay && <span className="text-[17px] text-[#bed0bd]">per person</span>}
       </p>
 
       {priceNote && (
@@ -59,7 +66,7 @@ export default function TourBookingCard({
         href={`/book?tour=${tour.slug}`}
         className="mt-7 flex h-[58px] items-center justify-center rounded-full bg-white px-8 text-[17px] font-bold text-forest transition-colors hover:bg-ivory"
       >
-        Book this tour
+        {isStay ? "Request these dates" : "Book this tour"}
       </a>
 
       <a

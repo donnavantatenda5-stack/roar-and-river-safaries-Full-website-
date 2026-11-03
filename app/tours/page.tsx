@@ -48,25 +48,36 @@ export default async function ToursIndexPage() {
         </section>
 
         {/* Everything else, grouped by category */}
-        {groups.map((group) => (
-          <section key={group.id} className="mt-24">
+        {groups.map((group) => {
+          const isStay = group.id === "accommodation";
+          return (
+          <section
+            key={group.id}
+            id={`activities-${group.id}`}
+            className="mt-24 scroll-mt-28"
+          >
             <div className="text-center">
               <p className="text-[13px] font-bold uppercase tracking-[0.32em] text-gold">
-                Activities
+                {isStay ? "Where to stay" : "Activities"}
               </p>
               <h2 className="mt-4 font-serif text-[clamp(1.9rem,4vw,2.75rem)] font-bold leading-[1.1] text-forest">
                 {group.label}
               </h2>
               <div className="mx-auto mt-5 h-[3px] w-[60px] bg-gold" />
               <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-muted">
-                {group.items.length} {group.items.length === 1 ? "activity" : "activities"} in this
-                group. Park and conservation levies are shown on each page.
+                {isStay
+                  ? `${group.items.length} places to stay in and around Victoria Falls, from campsites to five-star hotels. Nightly rates are confirmed by our team for your dates — open any property to see what it offers.`
+                  : `${group.items.length} ${group.items.length === 1 ? "activity" : "activities"} in this group. Park and conservation levies are shown on each page.`}
               </p>
             </div>
 
-            <ExpandableTourGrid tours={group.items} initial={ACTIVITY_VISIBLE} />
+            <ExpandableTourGrid
+              tours={group.items}
+              initial={isStay ? 6 : ACTIVITY_VISIBLE}
+            />
           </section>
-        ))}
+          );
+        })}
 
         <div className="mt-24 flex justify-center">
           <ButtonLink href="/book">Start a booking</ButtonLink>
