@@ -82,3 +82,48 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* ---------------------------------------------------------------- */
+/* Trust strip: a slow news-ticker scroll, matching the site rhythm. */
+/* ---------------------------------------------------------------- */
+
+@keyframes trust-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.trust-track {
+  animation: trust-marquee 28s linear infinite;
+  will-change: transform;
+}
+
+/* Let visitors stop the movement by resting on it. */
+.trust-track:hover,
+.trust-track:focus-within {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trust-track {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* The duplicate half exists only for the seamless loop. */
+  .trust-track > [data-marquee-list="copy"] {
+    display: none;
+  }
+
+  .trust-track > [data-marquee-list="main"] {
+    flex: 1 1 auto;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+  }
+}
