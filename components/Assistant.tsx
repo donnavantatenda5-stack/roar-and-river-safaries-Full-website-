@@ -109,6 +109,7 @@ export default function Assistant() {
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [typing, setTyping] = useState(false);
   const [listening, setListening] = useState(false);
+  const [voiceDraftReady, setVoiceDraftReady] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
 
   const weatherRef = useRef<WeatherReport | null>(null);
@@ -213,6 +214,7 @@ export default function Assistant() {
       if (!text) return;
       const speakResponse = speakReplyRef.current;
       speakReplyRef.current = false;
+      setVoiceDraftReady(false);
       setVoiceError(null);
       setInput("");
       append({ role: "user", text });
@@ -274,6 +276,7 @@ export default function Assistant() {
 
   const startVoiceInput = useCallback(() => {
     setVoiceError(null);
+    setVoiceDraftReady(false);
     const browserWindow = window as SpeechRecognitionWindow;
     const Recognition =
       browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
@@ -341,8 +344,8 @@ export default function Assistant() {
       }
 
       const text = [existingInput, recognized].filter(Boolean).join(" ");
-      speakReplyRef.current = true;
-      void handleSend(text);
+      setInput(text);
+      setVoiceDraftReady(true);
     };
 
     try {
@@ -357,7 +360,7 @@ export default function Assistant() {
           : "Couldn't start voice input. Please try again or type your question.",
       );
     }
-  }, [handleSend, input]);
+  }, [input]);
 
   const stopVoiceInput = useCallback(() => {
     recognitionRef.current?.stop();
@@ -483,25 +486,55 @@ export default function Assistant() {
                   aria-label="Message the assistant"
                   className="min-w-0 flex-1 bg-transparent py-2 text-[15px] text-forest outline-none placeholder:text-muted/70"
                 />
-                <button
-                  type="button"
-                  onClick={listening ? stopVoiceInput : startVoiceInput}
-                  aria-label={listening ? "Stop recording and send voice message" : "Record a voice message"}
-                  aria-pressed={listening}
-                  title={listening ? "Stop recording" : "Record a voice message"}
-                  className={cn(
-                    "mb-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
-                    listening
-                      ? "animate-pulse bg-red-100 text-red-700 hover:bg-red-200"
-                      : "bg-cream text-forest hover:bg-gold/20",
+                <div className="group/microphone relative mb-0.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (listening) {
+                        stopVoiceInput();
+                      } else if (voiceDraftReady && input.trim()) {
+                        speakReplyRef.current = true;
+                        void handleSend(input);
+                      } else {
+                        startVoiceInput();
+                      }
+                    }}
+                    aria-label={
+                      listening
+                        ? "Stop recording"
+                        : voiceDraftReady
+                          ? "Tap again to send voice message"
+                          : "Record a voice message"
+                    }
+                    aria-pressed={listening}
+                    title={
+                      listening
+                        ? "Stop recording"
+                        : voiceDraftReady
+                          ? "Tap again to send"
+                          : "Record a voice message"
+                    }
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-full transition-colors",
+                      listening
+                        ? "animate-pulse bg-red-100 text-red-700 hover:bg-red-200"
+                        : voiceDraftReady
+                          ? "bg-gold/20 text-forest hover:bg-gold/30"
+                          : "bg-cream text-forest hover:bg-gold/20",
+                    )}
+                  >
+                    {listening ? (
+                      <MicOff className="h-4.5 w-4.5" strokeWidth={2.2} />
+                    ) : (
+                      <Mic className="h-4.5 w-4.5" strokeWidth={2.2} />
+                    )}
+                  </button>
+                  {voiceDraftReady && !listening && (
+                    <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg bg-forest px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow transition-opacity group-hover/microphone:opacity-100 group-focus-within/microphone:opacity-100">
+                      Tap again to send
+                    </span>
                   )}
-                >
-                  {listening ? (
-                    <MicOff className="h-4.5 w-4.5" strokeWidth={2.2} />
-                  ) : (
-                    <Mic className="h-4.5 w-4.5" strokeWidth={2.2} />
-                  )}
-                </button>
+                </div>
                 <button
                   type="submit"
                   disabled={!input.trim()}
@@ -520,7 +553,12 @@ export default function Assistant() {
                     voiceError ? "text-red-700" : "text-forest",
                   )}
                 >
-                  {voiceError ?? "Listening… Speak now, or tap the microphone to finish."}
+                  {voiceError ?? "Listening… Speak now, then tap the microphone to finish."}
+                </p>
+              )}
+              {voiceDraftReady && !voiceError && (
+                <p role="status" aria-live="polite" className="mt-2 text-center text-xs text-forest">
+                  Check the transcript, then tap the microphone again to send.
                 </p>
               )}
               <p className="mt-1.5 text-center text-[10.5px] leading-snug text-muted">
