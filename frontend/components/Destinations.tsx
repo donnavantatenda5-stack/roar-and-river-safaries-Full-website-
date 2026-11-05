@@ -41,7 +41,7 @@ export default function Destinations() {
                     fill
                     quality={100}
                     sizes="(min-width:1024px) 300px, (min-width:640px) 50vw, 100vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 group-active:scale-105 motion-reduce:transition-none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-forest/10 via-transparent to-forest/85" />
                   <div className="absolute inset-x-0 bottom-0 p-[26px]">
