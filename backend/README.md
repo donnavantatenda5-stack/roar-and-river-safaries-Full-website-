@@ -30,3 +30,13 @@ Shared data and helpers that both the UI and the backend need stay in `lib/`:
 Run the app the same way as before from the project root:
 
     npm run dev
+
+## Booking email notifications
+
+Booking alerts are sent to the site contact address in `lib/site.ts`. Delivery requires a configured SMTP account
+(`SMTP_USER` and `SMTP_PASS`, with optional `SMTP_HOST`/`SMTP_PORT`) or Resend
+(`RESEND_API_KEY` and `RESEND_FROM_EMAIL`). Set these as server-only environment
+variables locally and in the Vercel project settings. Never expose provider
+credentials through `NEXT_PUBLIC_` variables. The booking form confirms that
+the request was saved and indicates when the email notification could not be
+sent.

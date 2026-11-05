@@ -5,7 +5,9 @@ import { isMailConfigured, sendBookingAlert } from "@/backend/lib/mailer";
 import { bookingSchema, type BookingInput } from "@/lib/validations";
 import { getActivity } from "@/lib/activities";
 
-export type BookingResult = { ok: true } | { ok: false; error: string };
+export type BookingResult =
+  | { ok: true; emailSent: boolean }
+  | { ok: false; error: string };
 
 async function lookupTourName(tourId: string): Promise<string> {
   try {
@@ -25,7 +27,7 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
   const d = parsed.data;
 
   // Bots fill the hidden field; pretend it worked and do nothing.
-  if (d.website) return { ok: true };
+  if (d.website) return { ok: true, emailSent: false };
 
   // No .select() here on purpose: visitors may insert bookings but never read them.
   const { error } = await supabase.from("bookings").insert({
@@ -42,6 +44,7 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
 
   // Alert the operator - also when the insert failed, so a booking that only
   // lives in this email is never silently lost. Best-effort, never fails the request.
+  let emailSent = false;
   if (isMailConfigured()) {
     try {
       const result = await sendBookingAlert({
@@ -54,15 +57,18 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
         message: d.message || null,
         dbSaved: !error,
       });
+      emailSent = result.sent;
       if (!result.sent) console.error("Booking email not sent:", result.error);
     } catch (e) {
       console.error("Booking email failed:", e);
     }
+  } else {
+    console.error("Booking email not sent: configure SMTP or Resend credentials.");
   }
 
   if (error) {
     return { ok: false, error: "Sorry, we couldn't save your booking. Please try again or message us on WhatsApp." };
   }
 
-  return { ok: true };
+  return { ok: true, emailSent };
 }

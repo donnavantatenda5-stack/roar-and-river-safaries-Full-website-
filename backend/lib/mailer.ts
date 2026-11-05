@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
+import { CONTACT } from "@/lib/site";
 
 export type BookingAlert = {
   tourName: string;
@@ -53,8 +54,7 @@ function render(a: BookingAlert) {
  * is configured. Never throws.
  */
 export async function sendBookingAlert(a: BookingAlert): Promise<MailResult> {
-  const to = process.env.BOOKING_NOTIFY_EMAIL?.trim();
-  if (!to) return { sent: false, error: "BOOKING_NOTIFY_EMAIL is not set" };
+  const to = CONTACT.email;
 
   const { subject, text } = render(a);
   const replyTo = a.email;
@@ -88,13 +88,17 @@ export async function sendBookingAlert(a: BookingAlert): Promise<MailResult> {
   if (isResendConfigured()) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY!.trim());
-      await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL!.trim(),
         to,
         replyTo,
         subject,
         text,
       });
+      if (error) {
+        console.error("Resend booking alert failed:", error);
+        return { sent: false, error: "resend send failed" };
+      }
       return { sent: true, via: "resend" };
     } catch (e) {
       console.error("Resend booking alert failed:", e);

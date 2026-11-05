@@ -7,6 +7,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { createBooking } from "@/backend/actions/booking";
 import { bookingSchema, type BookingInput } from "@/lib/validations";
 import { formatPrice, type Tour } from "@/lib/types";
+import { CONTACT } from "@/lib/site";
 
 const field =
   "w-full rounded-xl border border-[#e8e1d0] bg-white px-4 py-3 text-[15px] text-[#12281A] outline-none transition focus:border-[#B08D4F] focus:ring-2 focus:ring-[#B08D4F]/30";
@@ -23,13 +24,15 @@ export default function BookingForm({
   const [pending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const successRef = useRef<HTMLDivElement | null>(null);
 
-  // On phones the form sits far down the single-column page; bring the success
-  // message on screen the same way the desktop sees it (the form card is sticky).
+  // Keep the result visible and announced after submitting on narrow screens.
   useEffect(() => {
     if (!done) return;
-    successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const success = successRef.current;
+    success?.focus({ preventScroll: true });
+    success?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [done]);
 
   const {
@@ -47,6 +50,7 @@ export default function BookingForm({
     startTransition(async () => {
       const res = await createBooking(values);
       if (res.ok) {
+        setEmailSent(res.emailSent);
         setDone(true);
         reset();
       } else {
@@ -59,15 +63,35 @@ export default function BookingForm({
     return (
       <div
         ref={successRef}
-        className="rounded-2xl border border-[#e8e1d0] bg-white p-10 text-center shadow-sm"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        tabIndex={-1}
+        className="rounded-2xl border border-[#e8e1d0] bg-white p-6 text-center shadow-sm outline-none sm:p-10"
       >
         <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-[#B08D4F]" />
-        <h2 className="text-2xl font-semibold text-[#12281A]">Booking request received</h2>
+        <h2 className="text-2xl font-semibold text-[#12281A]">Booking request sent successfully</h2>
         <p className="mt-2 text-[#5c625f]">
           Thank you! We&apos;ll contact you shortly to confirm your adventure.
         </p>
+        {emailSent ? (
+          <p className="mt-3 text-sm text-[#5c625f]">
+            Our team has been notified and will reply to the email address you provided.
+          </p>
+        ) : (
+          <p className="mt-3 text-sm text-amber-800">
+            Your request was saved, but our team&apos;s email notification could not be sent. Please contact{" "}
+            <a className="font-semibold underline" href={`mailto:${CONTACT.email}`}>
+              {CONTACT.email}
+            </a>{" "}
+            to make sure we see it.
+          </p>
+        )}
         <button
-          onClick={() => setDone(false)}
+          onClick={() => {
+            setDone(false);
+            setEmailSent(false);
+          }}
           className="mt-6 rounded-full bg-[#12281A] px-6 py-3 text-sm font-semibold text-white"
         >
           Make another booking
