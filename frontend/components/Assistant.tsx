@@ -606,6 +606,7 @@ export default function Assistant() {
             alt=""
             width={736}
             height={552}
+            quality={100}
             className="assistant-launcher-icon h-full w-full object-cover"
           />
         </span>

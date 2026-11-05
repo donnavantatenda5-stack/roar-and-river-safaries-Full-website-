@@ -62,10 +62,12 @@ export default async function BookPage({
                         alt={selected.name}
                         fill
                         priority
+                        quality={100}
+                        unoptimized={Boolean(selectedStay)}
                         sizes="(min-width:1024px) 640px, 100vw"
                         className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-forest/0 to-forest/40" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-forest/0 to-forest/20" />
                       <div className="absolute inset-x-0 bottom-0 p-7">
                         <p className="text-[12px] font-bold uppercase tracking-[0.26em] text-sand">
                           You&apos;re booking

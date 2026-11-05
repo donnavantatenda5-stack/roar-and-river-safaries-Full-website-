@@ -9,6 +9,7 @@ export default function CtaBand() {
         src="/images/hero.jpg"
         alt=""
         fill
+        quality={100}
         sizes="100vw"
         className="-z-20 object-cover object-[50%_45%]"
       />

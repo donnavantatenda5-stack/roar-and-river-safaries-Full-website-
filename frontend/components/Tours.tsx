@@ -24,10 +24,11 @@ export default function Tours({ tours }: { tours: Tour[] }) {
                       src={tourImage(t)}
                       alt={t.name}
                       fill
+                      quality={100}
                       sizes="(min-width:1024px) 408px, (min-width:768px) 50vw, 100vw"
-                      className="object-cover transition duration-700 group-hover:scale-105"
+                      className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-forest/10 to-forest/35" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-forest/5 to-forest/20" />
                     <Link href={`/tours/${t.slug}`} className="absolute inset-0" aria-label={`Read more about ${t.name}`} />
                   </div>
 

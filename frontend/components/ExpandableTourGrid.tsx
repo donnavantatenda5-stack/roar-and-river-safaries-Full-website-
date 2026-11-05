@@ -81,10 +81,12 @@ function Grid({ tours }: { tours: Tour[] }) {
                     src={stay?.image ?? t.image_url ?? `/images/tours/${t.slug}.jpg`}
                     alt={t.name}
                     fill
+                    quality={100}
+                    unoptimized={Boolean(stay)}
                     sizes="(min-width:1024px) 380px, (min-width:768px) 50vw, 100vw"
-                    className="object-cover transition duration-700 group-hover:scale-105"
+                    className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-linear-to-b from-forest/10 to-forest/35" />
+                  <div className="absolute inset-0 bg-linear-to-b from-forest/5 to-forest/20" />
                 </div>
                 <div className="flex flex-1 flex-col p-5 sm:p-7">
                   <h3 className="font-serif text-[1.5rem] font-bold leading-snug text-forest">

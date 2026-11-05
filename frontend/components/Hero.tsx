@@ -12,7 +12,7 @@ export default function Hero() {
         alt="Aerial view of Victoria Falls with a rainbow over the Zambezi River"
         fill
         priority
-        quality={85}
+        quality={100}
         sizes="100vw"
         className="-z-30 object-cover object-[50%_30%]"
       />

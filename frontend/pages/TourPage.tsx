@@ -46,11 +46,12 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
           alt={tour.name}
           fill
           priority
-          quality={85}
+          quality={100}
+          unoptimized={Boolean(stay)}
           sizes="100vw"
           className="-z-20 object-cover"
         />
-        <div className="absolute inset-0 -z-10 bg-linear-to-b from-forest/15 via-forest/20 to-forest/60" />
+        <div className="absolute inset-0 -z-10 bg-linear-to-b from-forest/5 via-forest/10 to-forest/35" />
 
         <Container className="pb-16">
           <Link
@@ -245,10 +246,11 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                         src={tourImage(t)}
                         alt={t.name}
                         fill
+                        quality={100}
                         sizes="(min-width:768px) 33vw, 100vw"
-                        className="object-cover transition duration-700 group-hover:scale-105"
+                        className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-linear-to-b from-forest/10 to-forest/35" />
+                      <div className="absolute inset-0 bg-linear-to-b from-forest/5 to-forest/20" />
                     </div>
                     <div className="flex flex-1 flex-col px-7 pb-6 pt-6">
                       <h3 className="font-serif text-[1.45rem] font-bold leading-snug text-forest">
