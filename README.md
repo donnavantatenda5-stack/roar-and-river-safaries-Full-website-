@@ -5,16 +5,20 @@ Complete, ready-to-run website: homepage, per-tour detail pages, /book booking f
 
 ## Project structure
 
-This is one Next.js app, with the server-side code grouped separately from the UI:
+This is one Next.js app, with the frontend and server-side implementation grouped separately:
 
 | Folder | What lives there |
 | --- | --- |
-| `app/`, `components/`, `public/` | Frontend: pages, UI components, styles, images and video |
+| `frontend/` | Frontend page implementations, UI components, shared site chrome and styles |
+| `app/` | Thin Next.js route/layout entry points and the assistant API bridge |
+| `public/` | Images, logo and video served by Next.js from its required root public folder |
 | `lib/` | Shared content and helpers used by both sides (tours, activities, site details, validation, types) |
 | `backend/` | Backend: API logic, server actions, Supabase client, mailer and database schema |
 
-Next.js requires the `/api` route handlers to live in `app/api`, so those files are thin
-bridges that call the real logic in `backend/api`. See `backend/README.md` for details.
+Next.js requires route entry points and global layouts to live in `app/`, so those files
+delegate page rendering to `frontend/pages` and shared UI to `frontend/`. The public asset
+directory also stays at the project root as required by Next.js. See `frontend/README.md`
+and `backend/README.md` for details.
 
 ## Pages
 

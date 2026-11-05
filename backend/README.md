@@ -17,7 +17,7 @@ All server-only code for the site lives in this folder.
 - `app/api/assistant/route.ts` is a thin Next.js route handler that calls `api/assistant.ts`.
   Next.js requires route handlers to live inside `app/api`, so the route file stays there
   while the implementation lives here.
-- `components/BookingForm.tsx` imports the booking server action from
+- `frontend/components/BookingForm.tsx` imports the booking server action from
   `@/backend/actions/booking`.
 - `lib/tours.ts` loads tours from Supabase through `backend/lib/supabase.ts`, and falls
   back to the built-in catalogue when the database is not configured.

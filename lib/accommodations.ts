@@ -51,7 +51,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/elephant-hills-hotel.jfif",
     kind: "Hotel",
     stars: 4,
-    priceDescription: "Rates and availability are confirmed by the team for your dates.",
+    displayPriceUsd: 364,
+    priceDescription: "Typically $211–$364 per night; rates vary by date and room type.",
     amenities: [
       "Outdoor pool",
       "Spa",
