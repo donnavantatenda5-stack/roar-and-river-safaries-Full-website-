@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Loader2 } from "lucide-react";
-import { createBooking } from "@/app/actions/booking";
+import { createBooking } from "@/backend/actions/booking";
 import { bookingSchema, type BookingInput } from "@/lib/validations";
 import { formatPrice, type Tour } from "@/lib/types";
 

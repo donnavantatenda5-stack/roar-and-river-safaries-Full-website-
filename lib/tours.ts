@@ -49,7 +49,7 @@ export async function getTour(slug: string): Promise<Tour | undefined> {
 export async function getTours(): Promise<Tour[]> {
   try {
     // Imported lazily so a missing .env.local falls back instead of crashing the page.
-    const { supabase } = await import("@/lib/supabase");
+    const { supabase } = await import("@/backend/lib/supabase");
     const { data, error } = await supabase
       .from("tours")
       .select("*")

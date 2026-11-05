@@ -1,7 +1,7 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
-import { isMailConfigured, sendBookingAlert } from "@/lib/mailer";
+import { supabase } from "@/backend/lib/supabase";
+import { isMailConfigured, sendBookingAlert } from "@/backend/lib/mailer";
 import { bookingSchema, type BookingInput } from "@/lib/validations";
 import { getActivity } from "@/lib/activities";
 
