@@ -42,9 +42,13 @@ const ACTIVITY_IMAGE: Record<string, string> = {
   "horseback-safari": "/images/activities/horseback-safari.jpg",
   "walking-safari": "/images/activities/walking-safari.jpg",
   "lion-encounter": "/images/activities/lion-encounter.jpg",
-  "helicopter-flight": "/images/activities/helicopter-flight.jpg",
+  "helicopter-flight": "/images/activities/helicopter-flight.webp",
   "microlight-flight": "/images/activities/microlight-flight.jpg",
   "river-safari": "/images/activities/river-safari.jpg",
+  "sunrise-cruise": "/images/activities/sunrise-cruise.jfif",
+  "quad-bikes": "/images/activities/quad-bikes.jpg",
+  "big-tree-visit": "/images/activities/big-tree-visit.webp",
+  "airport-transfer": "/images/activities/airport-transfer.jfif",
   "sunset-dinner-cruise": "/images/activities/sunset-dinner-cruise.jpg",
   "zambezi-explorer-cruise": "/images/activities/zambezi-explorer-cruise.jpg",
   "ra-ikane-cruise": "/images/activities/ra-ikane-cruise.jpg",
@@ -130,10 +134,8 @@ const RAW: {
   { slug: "shopping-tour", name: "Shopping", price: 30, category: "cultural" },
   { slug: "livingstone-city-tour-museum", name: "Livingstone City Tour & Museum", price: 190, category: "cultural" },
 
-  // Accommodation. Mollynelly is our own guesthouse; the rest are booked
-  // through the team and priced on request (null), because nightly rates move
-  // with season and room type.
-  { slug: "mollynelly-guesthouse", name: "Mollynelly Guesthouse", price: 220, category: "accommodation" },
+  // Accommodation stays are listed from the shared catalog; rates are
+  // confirmed by the team for each guest's dates.
   ...STAYS.map((s) => ({
     slug: s.slug,
     name: s.name,

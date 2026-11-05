@@ -522,7 +522,7 @@ const ALIASES: [string, string][] = [
   ["theater", "simunye-theatre"],
   ["city tour", "city-tour"],
   ["shopping", "shopping-tour"],
-  ["mollynelly", "mollynelly-guesthouse"],
+  ["elephant hills", "elephant-hills-hotel"],
   ["airport transfer", "airport-transfer"],
   ["quad bike", "quad-bikes"],
   ["quad", "quad-bikes"],
@@ -743,8 +743,7 @@ function stayRecommendation(raw: string): AssistantReply {
   return {
     text:
       `${intro}\n` +
-      "Nightly rates are not published because they change with season and room type — send your dates and group size and the team will confirm the live rate. " +
-      "Mollynelly Guesthouse is our own guesthouse if you would like to stay with us directly.",
+      "Nightly rates are not published because they change with season and room type — send your dates and group size and the team will confirm the live rate.",
     actions: picks,
   };
 }

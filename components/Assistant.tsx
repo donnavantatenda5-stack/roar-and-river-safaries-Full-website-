@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, CloudSun, Compass, LoaderCircle, X } from "lucide-react";
+import { ArrowUp, CloudSun, Compass, LoaderCircle, Mic, MicOff, X } from "lucide-react";
 import {
   ASSISTANT_SUGGESTIONS,
   answer,
@@ -26,6 +26,32 @@ const WELCOME: AssistantMessage = {
 };
 
 type ChatTurn = { role: "user" | "assistant"; text: string };
+
+type SpeechRecognitionResult = {
+  readonly isFinal: boolean;
+  readonly 0?: { readonly transcript?: string };
+};
+type SpeechRecognitionEvent = {
+  readonly resultIndex: number;
+  readonly results: ArrayLike<SpeechRecognitionResult>;
+};
+type SpeechRecognitionErrorEvent = { readonly error: string };
+type SpeechRecognitionInstance = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
+type SpeechRecognitionWindow = Window & {
+  SpeechRecognition?: SpeechRecognitionConstructor;
+  webkitSpeechRecognition?: SpeechRecognitionConstructor;
+};
 
 /** null = not tried yet; false = server has no key, so stop calling it. */
 let aiAvailable: boolean | null = null;
@@ -82,9 +108,16 @@ export default function Assistant() {
   const [weather, setWeather] = useState<WeatherReport | null>(null);
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
 
   const weatherRef = useRef<WeatherReport | null>(null);
   const promiseRef = useRef<Promise<WeatherReport | null> | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const recognizedTextRef = useRef("");
+  const speakReplyRef = useRef(false);
+  const suppressVoiceSendRef = useRef(false);
+  const openRef = useRef(open);
   const idRef = useRef(0);
   const listRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -115,6 +148,37 @@ export default function Assistant() {
     return id;
   }, []);
 
+  const speakReply = useCallback((text: string) => {
+    if (!openRef.current || !text.trim() || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = navigator.language || "en-US";
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  const closeAssistant = useCallback(() => {
+    openRef.current = false;
+    suppressVoiceSendRef.current = true;
+    recognitionRef.current?.abort();
+    recognitionRef.current = null;
+    setListening(false);
+    speakReplyRef.current = false;
+    window.speechSynthesis?.cancel();
+    setOpen(false);
+  }, []);
+
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
+
+  useEffect(
+    () => () => {
+      recognitionRef.current?.abort();
+      window.speechSynthesis?.cancel();
+    },
+    [],
+  );
+
   // Fetch the forecast as soon as the panel opens, and focus the input.
   useEffect(() => {
     if (!open) return;
@@ -129,13 +193,13 @@ export default function Assistant() {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setOpen(false);
+        closeAssistant();
         buttonRef.current?.focus();
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, closeAssistant]);
 
   // Keep the transcript pinned to the newest message without scrolling the page.
   useEffect(() => {
@@ -147,6 +211,9 @@ export default function Assistant() {
     async (raw?: string) => {
       const text = (raw ?? input).trim();
       if (!text) return;
+      const speakResponse = speakReplyRef.current;
+      speakReplyRef.current = false;
+      setVoiceError(null);
       setInput("");
       append({ role: "user", text });
 
@@ -165,6 +232,7 @@ export default function Assistant() {
             message.id === responseId ? { ...message, ...reply } : message,
           ),
         );
+        if (speakResponse) speakReply(reply.text);
         return;
       }
 
@@ -173,6 +241,7 @@ export default function Assistant() {
       // WhatsApp / Call / Email follow-ups skip the model so details stay exact.
       if (CHANNEL_PICK.test(text)) {
         append({ role: "assistant", ...local });
+        if (speakResponse) speakReply(local.text);
         return;
       }
 
@@ -198,9 +267,101 @@ export default function Assistant() {
           ),
         );
       }
+      if (speakResponse) speakReply(ai ?? local.text);
     },
-    [append, messages, input, loadWeather],
+    [append, messages, input, loadWeather, speakReply],
   );
+
+  const startVoiceInput = useCallback(() => {
+    setVoiceError(null);
+    const browserWindow = window as SpeechRecognitionWindow;
+    const Recognition =
+      browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      setVoiceError("Voice input isn't supported in this browser. Try Chrome or type your question.");
+      return;
+    }
+
+    const recognition = new Recognition();
+    const existingInput = input.trim();
+    recognizedTextRef.current = "";
+    suppressVoiceSendRef.current = false;
+    recognition.lang = navigator.language || "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognitionRef.current = recognition;
+
+    recognition.onresult = (event) => {
+      let interim = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const transcript = result?.[0]?.transcript?.trim() ?? "";
+        if (result?.isFinal) {
+          recognizedTextRef.current = `${recognizedTextRef.current} ${transcript}`.trim();
+        } else {
+          interim = `${interim} ${transcript}`.trim();
+        }
+      }
+      setInput([existingInput, recognizedTextRef.current, interim].filter(Boolean).join(" "));
+    };
+
+    let recognitionFailed = false;
+    recognition.onerror = (event) => {
+      if (suppressVoiceSendRef.current) return;
+      recognitionFailed = true;
+      recognizedTextRef.current = "";
+      recognitionRef.current = null;
+      setListening(false);
+      setVoiceError(
+        event.error === "not-allowed" || event.error === "service-not-allowed"
+          ? "Microphone access was denied. Allow microphone access in your browser settings and try again."
+          : event.error === "audio-capture"
+            ? "No microphone was found. Connect a microphone or type your question."
+            : event.error === "no-speech"
+              ? "I couldn't hear anything. Tap the microphone and try again."
+              : "Voice input failed. Please try again or type your question.",
+      );
+    };
+
+    recognition.onend = () => {
+      recognitionRef.current = null;
+      setListening(false);
+      if (suppressVoiceSendRef.current) {
+        suppressVoiceSendRef.current = false;
+        recognizedTextRef.current = "";
+        return;
+      }
+      const recognized = recognizedTextRef.current.trim();
+      recognizedTextRef.current = "";
+      if (!recognized) {
+        if (!recognitionFailed) {
+          setVoiceError("I couldn't hear anything. Tap the microphone and try again.");
+        }
+        return;
+      }
+
+      const text = [existingInput, recognized].filter(Boolean).join(" ");
+      speakReplyRef.current = true;
+      void handleSend(text);
+    };
+
+    try {
+      recognition.start();
+      setListening(true);
+    } catch (error) {
+      recognitionRef.current = null;
+      setListening(false);
+      setVoiceError(
+        error instanceof DOMException && error.name === "NotAllowedError"
+          ? "Microphone access was denied. Allow microphone access in your browser settings and try again."
+          : "Couldn't start voice input. Please try again or type your question.",
+      );
+    }
+  }, [handleSend, input]);
+
+  const stopVoiceInput = useCallback(() => {
+    recognitionRef.current?.stop();
+  }, []);
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -232,7 +393,7 @@ export default function Assistant() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={closeAssistant}
                   aria-label="Close assistant"
                   className="flex h-9 w-9 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/10 hover:text-white"
                 >
@@ -323,6 +484,25 @@ export default function Assistant() {
                   className="min-w-0 flex-1 bg-transparent py-2 text-[15px] text-forest outline-none placeholder:text-muted/70"
                 />
                 <button
+                  type="button"
+                  onClick={listening ? stopVoiceInput : startVoiceInput}
+                  aria-label={listening ? "Stop recording and send voice message" : "Record a voice message"}
+                  aria-pressed={listening}
+                  title={listening ? "Stop recording" : "Record a voice message"}
+                  className={cn(
+                    "mb-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
+                    listening
+                      ? "animate-pulse bg-red-100 text-red-700 hover:bg-red-200"
+                      : "bg-cream text-forest hover:bg-gold/20",
+                  )}
+                >
+                  {listening ? (
+                    <MicOff className="h-4.5 w-4.5" strokeWidth={2.2} />
+                  ) : (
+                    <Mic className="h-4.5 w-4.5" strokeWidth={2.2} />
+                  )}
+                </button>
+                <button
                   type="submit"
                   disabled={!input.trim()}
                   aria-label="Send message"
@@ -331,6 +511,18 @@ export default function Assistant() {
                   <ArrowUp className="h-4.5 w-4.5" strokeWidth={2.4} />
                 </button>
               </div>
+              {(listening || voiceError) && (
+                <p
+                  role={voiceError ? "alert" : "status"}
+                  aria-live="polite"
+                  className={cn(
+                    "mt-2 text-center text-xs",
+                    voiceError ? "text-red-700" : "text-forest",
+                  )}
+                >
+                  {voiceError ?? "Listening… Speak now, or tap the microphone to finish."}
+                </p>
+              )}
               <p className="mt-1.5 text-center text-[10.5px] leading-snug text-muted">
                 Tour info from this site · Weather by{" "}
                 <a
@@ -353,10 +545,11 @@ export default function Assistant() {
         type="button"
         onClick={() => {
           if (open) {
-            setOpen(false);
+            closeAssistant();
             return;
           }
 
+          openRef.current = true;
           setOpen(true);
           void handleSend(LAUNCH_MESSAGE);
         }}

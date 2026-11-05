@@ -2,9 +2,8 @@
  * Accommodation we can book for guests in Victoria Falls.
  *
  * These are shown in the Accommodation group on /tours and each one gets its
- * own detail page at /tours/<slug>. Nightly rates are not published because
- * they move with season and room type, so `price_usd` stays null and the team
- * confirms the live rate for the guest's dates.
+ * own detail page at /tours/<slug>. Indicative nightly prices are estimates;
+ * the team confirms the live rate for each guest's dates.
  *
  * Property details come from the public Google Hotels listings (ratings and
  * amenities) supplied by the business. Keep them in sync when they change.
@@ -31,6 +30,13 @@ export type Stay = {
   rating?: number;
   /** Review count exactly as shown publicly, e.g. "1.2k". */
   reviews?: string;
+  /** Highest displayed nightly estimate, in USD; never a live quote. */
+  displayPriceUsd?: number;
+  /** Full rate context shown on the card and the property's detail page. */
+  priceDescription?: string;
+  checkIn?: string;
+  checkOut?: string;
+  driveToFallsMinutes?: number;
   amenities?: string[];
   /** One-line description used on the cards and detail page. */
   highlight?: string;
@@ -40,10 +46,48 @@ export type Stay = {
 
 export const STAYS: Stay[] = [
   {
+    slug: "elephant-hills-hotel",
+    name: "Elephant Hills Hotel",
+    image: "/images/accommodations/elephant-hills-hotel.jfif",
+    kind: "Hotel",
+    stars: 4,
+    priceDescription: "Rates and availability are confirmed by the team for your dates.",
+    amenities: [
+      "Outdoor pool",
+      "Spa",
+      "Free parking",
+      "Free breakfast",
+      "Free Wi-Fi",
+      "Golf",
+      "Tennis",
+      "Games room",
+      "Child-friendly",
+      "Airport shuttle (extra charge)",
+      "Local shuttle",
+      "Accessible",
+      "Air conditioning",
+      "Restaurant",
+      "Bar",
+      "Room service",
+      "Breakfast buffet",
+      "Full-service laundry",
+      "Fitness centre",
+      "Business centre",
+    ],
+    highlight:
+      "A 4-star resort overlooking the upper Zambezi, known for its 18-hole championship golf course and wildlife roaming the grounds.",
+  },
+  {
     slug: "n1-hotel-campsite-victoria-falls",
     name: "N1 Hotel & Campsite Victoria Falls",
+    image: "/images/accommodations/n1-hotel-campsite-victoria-falls.webp",
     kind: "Hotel",
     stars: 3,
+    displayPriceUsd: 90,
+    priceDescription: "Typically $80–$90 per night; rates vary by date and room type.",
+    checkIn: "14:00",
+    checkOut: "10:00",
+    driveToFallsMinutes: 2,
     rating: 4.3,
     reviews: "948",
     amenities: [
@@ -62,8 +106,14 @@ export const STAYS: Stay[] = [
   {
     slug: "dzimbahwe-guest-lodge",
     name: "Dzimbahwe Guest Lodge",
+    image: "/images/accommodations/dzimbahwe-guest-lodge.webp",
     kind: "Guest lodge",
     stars: 3,
+    displayPriceUsd: 150,
+    priceDescription: "Rates on request; typical nightly rates are around $80–$150.",
+    checkIn: "14:00",
+    checkOut: "11:00",
+    driveToFallsMinutes: 8,
     rating: 4.2,
     reviews: "330",
     amenities: [
@@ -82,8 +132,14 @@ export const STAYS: Stay[] = [
   {
     slug: "cresta-sprayview",
     name: "Cresta Sprayview",
+    image: "/images/accommodations/cresta-sprayview.webp",
     kind: "Hotel",
     stars: 3,
+    displayPriceUsd: 130,
+    priceDescription: "From $130 per night; the final rate depends on your dates and room type.",
+    checkIn: "14:00",
+    checkOut: "11:00",
+    driveToFallsMinutes: 4,
     rating: 4.2,
     reviews: "937",
     amenities: [
@@ -100,10 +156,59 @@ export const STAYS: Stay[] = [
       "A central hotel with a pool, bar and restaurant, handy for both the town centre and the Falls.",
   },
   {
+    slug: "waterfalls-lodge",
+    name: "Waterfalls Lodge",
+    image: "/images/accommodations/waterfalls-lodge.jpg",
+    kind: "Lodge",
+    checkIn: "02:00",
+    checkOut: "10:30",
+    driveToFallsMinutes: 4,
+    rating: 4.9,
+    reviews: "100",
+    displayPriceUsd: 160,
+    priceDescription: "Rates on request; typical nightly rates are around $90–$160.",
+    amenities: [
+      "Free breakfast",
+      "Free Wi-Fi",
+      "Free parking",
+      "Outdoor pool",
+      "Air conditioning",
+      "Spa",
+      "Bar",
+      "Restaurant",
+      "Airport shuttle",
+    ],
+    highlight:
+      "A lodge with a pool, spa, free parking, breakfast and Wi-Fi, around four minutes' drive from Victoria Falls.",
+  },
+  {
+    slug: "victoria-falls-budget-hotel",
+    name: "Victoria Falls Budget Hotel",
+    image: "/images/accommodations/victoria-falls-budget-hotel.jpg",
+    kind: "Hotel",
+    rating: 3.3,
+    reviews: "78",
+    displayPriceUsd: 100,
+    priceDescription: "Rates on request; typical nightly rates are around $60–$100.",
+    amenities: [
+      "Free breakfast",
+      "Free Wi-Fi",
+      "Free parking",
+      "Child-friendly",
+    ],
+    highlight:
+      "A budget hotel with free breakfast, Wi-Fi and parking, and child-friendly facilities.",
+    tags: ["Child-friendly"],
+  },
+  {
     slug: "shearwater-explorers-village",
     name: "Shearwater Explorers Village",
+    image: "/images/accommodations/shearwater-explorers-village.webp",
     kind: "Lodge",
     stars: 3,
+    displayPriceUsd: 137,
+    priceDescription:
+      "Indicative rates per person sharing: tents from $34, standard rooms from $110, and deluxe rooms from $137 per night.",
     rating: 4.4,
     reviews: "1.1k",
     amenities: [
@@ -125,6 +230,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/victoria-falls-rainbow-hotel.webp",
     kind: "Hotel",
     stars: 3,
+    displayPriceUsd: 220,
+    priceDescription: "Rates on request; typical nightly rates are around $130–$220.",
     rating: 4.1,
     reviews: "782",
     amenities: [
@@ -146,6 +253,9 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/ilala-lodge-hotel.webp",
     kind: "Hotel",
     stars: 4,
+    displayPriceUsd: 325,
+    priceDescription:
+      "Typically $271–$325+ per person sharing per night, bed and breakfast; rates vary by date and room type.",
     rating: 4.6,
     reviews: "1.0k",
     amenities: [
@@ -168,6 +278,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/victoria-falls-safari-club.jpg",
     kind: "Hotel",
     stars: 5,
+    displayPriceUsd: 350,
+    priceDescription: "Rates on request; upscale suites typically start around $350 per night.",
     rating: 4.6,
     reviews: "736",
     amenities: [
@@ -189,6 +301,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/bayete-guest-lodge.jpg",
     kind: "Guest lodge",
     stars: 4,
+    displayPriceUsd: 250,
+    priceDescription: "Rates on request; typical nightly rates are around $150–$250.",
     rating: 4.5,
     reviews: "439",
     amenities: [
@@ -210,6 +324,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/shongwe-lookout.webp",
     kind: "Lodge",
     stars: 4,
+    displayPriceUsd: 240,
+    priceDescription: "Rates on request; typical nightly rates are around $140–$240.",
     rating: 4.6,
     reviews: "379",
     amenities: [
@@ -228,8 +344,11 @@ export const STAYS: Stay[] = [
   {
     slug: "victoria-falls-deluxe-suites",
     name: "The Victoria Falls Deluxe Suites",
+    image: "/images/accommodations/victoria-falls-deluxe-suites.jfif",
     kind: "Hotel",
     stars: 5,
+    displayPriceUsd: 300,
+    priceDescription: "Rates on request; upscale suites typically start around $300 per night.",
     rating: 4.1,
     reviews: "66",
     amenities: [
@@ -238,6 +357,7 @@ export const STAYS: Stay[] = [
       "Free parking",
       "Pool",
       "Air conditioning",
+      "Pet-friendly",
       "Restaurant",
       "Airport shuttle",
     ],
@@ -251,6 +371,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/nkosi-guest-lodge.jpg",
     kind: "Guest lodge",
     stars: 5,
+    displayPriceUsd: 250,
+    priceDescription: "Rates on request; typical nightly rates are around $150–$250.",
     rating: 4.6,
     reviews: "172",
     amenities: [
@@ -270,6 +392,8 @@ export const STAYS: Stay[] = [
     name: "Zambezi Family Lodge",
     image: "/images/accommodations/zambezi-family-lodge.jpg",
     kind: "Lodge",
+    displayPriceUsd: 160,
+    priceDescription: "Rates on request; typical nightly rates are around $90–$160.",
     rating: 4.9,
     reviews: "344",
     amenities: [
@@ -288,8 +412,15 @@ export const STAYS: Stay[] = [
   {
     slug: "the-victoria-falls-hotel",
     name: "The Victoria Falls Hotel",
+    image: "/images/accommodations/the-victoria-falls-hotel.webp",
     kind: "Hotel",
     stars: 5,
+    displayPriceUsd: 664,
+    priceDescription:
+      "Classic rooms from $664 per night; the final rate depends on your dates and room type.",
+    checkIn: "14:00",
+    checkOut: "10:00",
+    driveToFallsMinutes: 2,
     rating: 4.6,
     reviews: "2.2k",
     amenities: [
@@ -306,10 +437,36 @@ export const STAYS: Stay[] = [
       "The historic five-star address in Victoria Falls, with a pool, spa, fitness centre and famous terrace bar.",
   },
   {
+    slug: "victoria-falls-safari-lodge",
+    name: "Victoria Falls Safari Lodge",
+    image: "/images/accommodations/victoria-falls-safari-lodge.jpg",
+    kind: "Hotel",
+    stars: 4,
+    displayPriceUsd: 191,
+    priceDescription: "From $191+ per night; rates vary by date and room type.",
+    rating: 4.7,
+    reviews: "67",
+    amenities: [
+      "Free breakfast",
+      "Free Wi-Fi",
+      "Free parking",
+      "Pool",
+      "Air conditioning",
+      "Fitness centre",
+      "Spa",
+      "Bar",
+    ],
+    highlight:
+      "A four-star lodge with free breakfast, Wi-Fi and parking, a pool, fitness centre, spa and bar.",
+  },
+  {
     slug: "zambezi-boutique-guesthouse",
     name: "Zambezi Boutique Guesthouse",
     image: "/images/accommodations/zambezi-boutique-guesthouse.jpg",
     kind: "Guest house",
+    displayPriceUsd: 260,
+    priceDescription: "Rates on request; typical nightly rates are around $160–$260.",
+    driveToFallsMinutes: 9,
     rating: 4.8,
     reviews: "102",
     amenities: [
@@ -327,11 +484,37 @@ export const STAYS: Stay[] = [
       "A boutique guesthouse with a pool, fitness centre, bar and restaurant, plus room service.",
   },
   {
+    slug: "savanna68-hotel-victoria-falls",
+    name: "Savanna68 Hotel Victoria Falls",
+    image: "/images/accommodations/savanna68-hotel-victoria-falls.jfif",
+    kind: "Hotel",
+    displayPriceUsd: 200,
+    priceDescription: "Rates on request; typical nightly rates are around $120–$200.",
+    rating: 4.8,
+    reviews: "59",
+    amenities: [
+      "Free breakfast",
+      "Free Wi-Fi",
+      "Free parking",
+      "Outdoor pool",
+      "Air conditioning",
+      "Fitness centre",
+      "Bar",
+      "Restaurant",
+      "Room service",
+    ],
+    highlight:
+      "A highly rated hotel with free breakfast, Wi-Fi and parking, plus a pool, fitness centre, bar and restaurant.",
+  },
+  {
     slug: "victoria-falls-backpackers-lodge",
     name: "Victoria Falls Backpackers Lodge",
     image: "/images/accommodations/victoria-falls-backpackers-lodge.jpg",
     kind: "Backpackers",
     stars: 2,
+    displayPriceUsd: 70,
+    priceDescription:
+      "Rates on request; budget dorm beds are around $25 per night, while private rooms start around $70.",
     rating: 4.2,
     reviews: "391",
     amenities: [
@@ -353,6 +536,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/batonka-guest-lodge.jpg",
     kind: "Guest lodge",
     stars: 4,
+    displayPriceUsd: 195,
+    priceDescription: "From $195+ per night with breakfast; final rates depend on your dates and room type.",
     rating: 4.7,
     reviews: "388",
     amenities: [
@@ -374,6 +559,8 @@ export const STAYS: Stay[] = [
     image: "/images/accommodations/lokuthula-lodges.webp",
     kind: "Lodge",
     stars: 3,
+    displayPriceUsd: 200,
+    priceDescription: "Rates on request; self-catering units typically start around $200 per night.",
     rating: 4.6,
     reviews: "573",
     amenities: [
@@ -395,6 +582,8 @@ export const STAYS: Stay[] = [
     name: "Victoria Falls Oasis Hotel",
     image: "/images/accommodations/victoria-falls-oasis-hotel.jpg",
     kind: "Hotel",
+    displayPriceUsd: 180,
+    priceDescription: "Rates on request; typical nightly rates are around $100–$180.",
     rating: 4.5,
     reviews: "42",
     amenities: [
@@ -414,7 +603,10 @@ export const STAYS: Stay[] = [
   {
     slug: "private-spacious-cottage-victoria-falls",
     name: "Private Spacious Cottage in Victoria Falls",
+    image: "/images/accommodations/private-spacious-cottage-victoria-falls.jpg",
     kind: "Holiday rental",
+    displayPriceUsd: 200,
+    priceDescription: "Rates on request; typical nightly rates are around $120–$200.",
     rating: 4.6,
     reviews: "43",
     amenities: [
@@ -436,6 +628,8 @@ export const STAYS: Stay[] = [
     name: "The Pods Victoria Falls",
     image: "/images/accommodations/the-pods-victoria-falls.jpg",
     kind: "Holiday rental",
+    priceDescription:
+      "Glamping and luxury-tent rates vary by dates and unit; contact our team for a current estimate.",
     rating: 5,
     reviews: "25",
     amenities: [
@@ -458,6 +652,8 @@ export const STAYS: Stay[] = [
     name: "Drift Inn",
     image: "/images/accommodations/drift-inn.jpg",
     kind: "Accommodation",
+    displayPriceUsd: 130,
+    priceDescription: "Rates on request; typical nightly rates are around $70–$130.",
     highlight: "Contact our team for property details, availability and current rates.",
   },
   {
@@ -465,6 +661,8 @@ export const STAYS: Stay[] = [
     name: "Living Stone Lodge",
     image: "/images/accommodations/living-stone-lodge.jpg",
     kind: "Accommodation",
+    displayPriceUsd: 200,
+    priceDescription: "Rates on request; luxury stays typically start around $200 per night.",
     highlight: "Contact our team for property details, availability and current rates.",
   },
   {
@@ -472,20 +670,43 @@ export const STAYS: Stay[] = [
     name: "Mbano Manor Hotel Victoria Falls",
     image: "/images/accommodations/mbano-manor-hotel-victoria-falls.jpg",
     kind: "Accommodation",
+    displayPriceUsd: 400,
+    priceDescription: "Rates on request; this luxury five-star boutique hotel is typically $400+ per night.",
     highlight: "Contact our team for property details, availability and current rates.",
   },
   {
     slug: "mopani-lodge-victoria-falls",
     name: "Mopani Lodge Victoria Falls",
     image: "/images/accommodations/mopani-lodge-victoria-falls.jpg",
-    kind: "Accommodation",
-    highlight: "Contact our team for property details, availability and current rates.",
+    kind: "Hotel",
+    stars: 4,
+    checkIn: "14:00",
+    checkOut: "10:00",
+    driveToFallsMinutes: 7,
+    rating: 4.2,
+    reviews: "233",
+    displayPriceUsd: 220,
+    priceDescription: "Rates on request; typical nightly rates are around $130–$220.",
+    amenities: [
+      "Free breakfast",
+      "Free Wi-Fi",
+      "Free parking",
+      "Outdoor pool",
+      "Air conditioning",
+      "Room service",
+      "Airport shuttle",
+      "Golf",
+    ],
+    highlight:
+      "A four-star lodge with a pool, free parking, breakfast and Wi-Fi, around seven minutes' drive from Victoria Falls.",
   },
   {
     slug: "phezulu-guest-lodge",
     name: "PheZulu Guest Lodge",
     image: "/images/accommodations/phezulu-guest-lodge.jpg",
     kind: "Accommodation",
+    displayPriceUsd: 170,
+    priceDescription: "Rates on request; typical nightly rates are around $100–$170.",
     highlight: "Contact our team for property details, availability and current rates.",
   },
   {
@@ -493,6 +714,8 @@ export const STAYS: Stay[] = [
     name: "Pioneers Lodge",
     image: "/images/accommodations/pioneers-lodge.jpg",
     kind: "Accommodation",
+    displayPriceUsd: 280,
+    priceDescription: "Rates on request; typical nightly rates are around $180–$280.",
     highlight: "Contact our team for property details, availability and current rates.",
   },
   {
@@ -500,6 +723,9 @@ export const STAYS: Stay[] = [
     name: "Shongwe Oasis",
     image: "/images/accommodations/shongwe-oasis.jpg",
     kind: "Accommodation",
+    displayPriceUsd: 200,
+    priceDescription:
+      "Rates on request; this adults-exclusive boutique stay typically starts around $200 per night.",
     highlight: "Contact our team for property details, availability and current rates.",
   },
 ];

@@ -9,6 +9,7 @@ import TourFacts from "@/components/TourFacts";
 import TourBookingCard from "@/components/TourBookingCard";
 import ButtonLink from "@/components/ui/ButtonLink";
 import { getTour, getAllTours, tourImage, SHORT_NAMES } from "@/lib/tours";
+import { STAYS } from "@/lib/accommodations";
 import { tourDetail, tourIntro } from "@/lib/tourDetails";
 import { formatPrice } from "@/lib/types";
 
@@ -30,6 +31,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
   if (!tour) notFound();
 
   const detail = tourDetail(tour.slug);
+  const stay = STAYS.find((item) => item.slug === tour.slug);
   const all = await getAllTours();
   const isStay = tour.price_usd === null;
   const others = all
@@ -42,7 +44,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
       {/* Hero */}
       <section className="relative isolate flex min-h-[62svh] items-end overflow-hidden">
         <Image
-          src={tourImage(tour)}
+          src={stay?.image ?? tourImage(tour)}
           alt={tour.name}
           fill
           priority
@@ -50,7 +52,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
           sizes="100vw"
           className="-z-20 object-cover"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-forest/55 via-forest/45 to-forest/90" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-forest/15 via-forest/20 to-forest/60" />
 
         <Container className="pb-16">
           <Link
@@ -194,7 +196,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                     </h2>
                     <p className="mt-5 text-[17px] leading-[1.75] text-muted">
                       {isStay
-                        ? "Full details for this property are on the way. Message us and we will send you the room types, amenities and the rate for your dates."
+                        ? stay?.highlight ?? "Full details for this property are on the way. Message us and we will send you the room types, amenities and the rate for your dates."
                         : "Full details for this tour are on the way. Message us and we'll send you the itinerary, timings and what's included, or book straight away and we'll confirm the details with you."}
                     </p>
                     <div className="mt-8 flex flex-wrap gap-3">
@@ -212,12 +214,13 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
 
             <div className="lg:sticky lg:top-32 lg:self-start">
               <TourBookingCard
-              tour={tour}
-              title={name}
-              governmentFees={detail?.governmentFees}
-              priceNote={detail?.priceNote}
-              variants={detail?.variants}
-            />
+                tour={tour}
+                title={name}
+                governmentFees={detail?.governmentFees}
+                priceNote={detail?.priceNote}
+                variants={detail?.variants}
+                estimatedNightlyPriceUsd={stay?.displayPriceUsd}
+              />
             </div>
           </div>
         </Container>
@@ -262,15 +265,15 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
               ))}
             </div>
 
-<Reveal className="mt-14 flex justify-center">
-            <ButtonLink
-              href={isStay ? "/tours#activities-accommodation" : "/tours"}
-              variant="outline"
-              className="!border-forest !text-forest hover:!bg-forest/5"
-            >
-              {isStay ? "See all places to stay" : `See all ${all.length} tours and activities`}
-            </ButtonLink>
-          </Reveal>
+            <Reveal className="mt-14 flex justify-center">
+              <ButtonLink
+                href={isStay ? "/tours#activities-accommodation" : "/tours"}
+                variant="outline"
+                className="!border-forest !text-forest hover:!bg-forest/5"
+              >
+                {isStay ? "See all places to stay" : `See all ${all.length} tours and activities`}
+              </ButtonLink>
+            </Reveal>
           </Container>
         </section>
       )}

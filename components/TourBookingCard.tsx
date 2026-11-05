@@ -9,12 +9,14 @@ export default function TourBookingCard({
   governmentFees,
   priceNote,
   variants,
+  estimatedNightlyPriceUsd,
 }: {
   tour: Tour;
   title: string;
   governmentFees?: string;
   priceNote?: string;
   variants?: { label: string; priceUsd: number }[];
+  estimatedNightlyPriceUsd?: number;
 }) {
   const isStay = tour.price_usd === null;
   const wa = whatsappHref(
@@ -25,16 +27,24 @@ export default function TourBookingCard({
 
   return (
     <div className="rounded-[22px] bg-forest p-8 text-white shadow-[0_20px_50px_rgba(18,40,26,0.28)]">
-      <p className="text-[12px] font-bold uppercase tracking-[0.28em] text-sand">Price</p>
+      <p className="text-[12px] font-bold uppercase tracking-[0.28em] text-sand">
+        {isStay && estimatedNightlyPriceUsd !== undefined ? "Indicative nightly price" : "Price"}
+      </p>
       <p className="mt-3 flex items-baseline gap-2">
         <span
           className={`font-serif font-bold leading-none text-white ${
             isStay ? "text-[2.1rem]" : "text-[3.2rem]"
           }`}
         >
-          {formatPrice(tour.price_usd)}
+          {isStay && estimatedNightlyPriceUsd !== undefined
+            ? formatPrice(estimatedNightlyPriceUsd)
+            : formatPrice(tour.price_usd)}
         </span>
-        {!isStay && <span className="text-[17px] text-[#bed0bd]">per person</span>}
+        {isStay && estimatedNightlyPriceUsd !== undefined ? (
+          <span className="text-[15px] text-[#bed0bd]">per night (estimate)</span>
+        ) : (
+          !isStay && <span className="text-[17px] text-[#bed0bd]">per person</span>
+        )}
       </p>
 
       {priceNote && (

@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { tourDetail, tourIntro } from "@/lib/tourDetails";
 import { getAllTours, getTours, tourImage } from "@/lib/tours";
 import { formatPrice } from "@/lib/types";
+import { STAYS } from "@/lib/accommodations";
 
 export const metadata = {
   title: "Book a Tour | Roar and River Safaris",
@@ -31,6 +32,9 @@ export default async function BookPage({
   const tours = await getAllTours();
   const footerTours = await getTours();
   const selected = tourSlug ? tours.find((t) => t.slug === tourSlug) : undefined;
+  const selectedStay = selected
+    ? STAYS.find((stay) => stay.slug === selected.slug)
+    : undefined;
   const defaultTourId = selected?.id;
   const detail = selected ? tourDetail(selected.slug) : undefined;
   const intro = selected ? tourIntro(selected, detail) : "";
@@ -54,7 +58,7 @@ export default async function BookPage({
             Tours are unavailable right now. Please message us directly to book.
           </p>
         ) : (
-          <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_minmax(0,32rem)] lg:items-start lg:gap-12">
+          <div className="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-12">
             {/* What's being booked - read this before you fill the form in. */}
             <div>
               {selected ? (
@@ -62,19 +66,19 @@ export default async function BookPage({
                   <div className="overflow-hidden rounded-[22px] border border-line bg-white shadow-[0_14px_36px_rgba(30,40,30,0.08)]">
                     <div className="relative aspect-[408/200] overflow-hidden">
                       <Image
-                        src={tourImage(selected)}
+                        src={selectedStay?.image ?? tourImage(selected)}
                         alt={selected.name}
                         fill
                         priority
                         sizes="(min-width:1024px) 640px, 100vw"
                         className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-forest/10 to-forest/60" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-forest/0 to-forest/40" />
                       <div className="absolute inset-x-0 bottom-0 p-7">
                         <p className="text-[12px] font-bold uppercase tracking-[0.26em] text-sand">
                           You&apos;re booking
                         </p>
-                        <h2 className="mt-2 font-serif text-[1.9rem] font-bold leading-tight text-white sm:text-[2.2rem]">
+                        <h2 className="mt-2 max-w-[24ch] font-serif text-[1.9rem] font-bold leading-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.6)] sm:text-[2.2rem]">
                           {selected.name}
                         </h2>
                       </div>
