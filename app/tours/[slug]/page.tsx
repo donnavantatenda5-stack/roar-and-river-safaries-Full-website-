@@ -52,7 +52,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
           sizes="100vw"
           className="-z-20 object-cover"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-forest/15 via-forest/20 to-forest/60" />
+        <div className="absolute inset-0 -z-10 bg-linear-to-b from-forest/15 via-forest/20 to-forest/60" />
 
         <Container className="pb-16">
           <Link
@@ -69,7 +69,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
             {tour.name}
           </h1>
           {tourIntro(tour, detail) && (
-            <p className="mt-6 max-w-[760px] text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
+            <p className="mt-6 max-w-190 text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.5)]">
               {tourIntro(tour, detail)}
             </p>
           )}
@@ -137,7 +137,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                       </h2>
                       <div className="mt-7 grid gap-4 sm:grid-cols-2">
                         {detail.pickup && (
-                          <div className="rounded-[16px] border border-line bg-white px-6 py-5">
+                          <div className="rounded-2xl border border-line bg-white px-6 py-5">
                             <p className="flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.22em] text-gold-dark">
                               <MapPin className="h-4 w-4" strokeWidth={2.4} />
                               Pickup details
@@ -146,7 +146,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                           </div>
                         )}
                         {detail.endPoint && (
-                          <div className="rounded-[16px] border border-line bg-white px-6 py-5">
+                          <div className="rounded-2xl border border-line bg-white px-6 py-5">
                             <p className="flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.22em] text-gold-dark">
                               <Flag className="h-4 w-4" strokeWidth={2.4} />
                               End point
@@ -178,7 +178,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                     <Reveal className="mt-14">
                       <div className="rounded-[18px] border-l-4 border-gold bg-cream px-7 py-6">
                         <p className="flex items-center gap-2.5 text-[13px] font-bold uppercase tracking-[0.24em] text-forest">
-                          <Info className="h-[18px] w-[18px] text-gold" strokeWidth={2.4} />
+                          <Info className="h-4.5 w-4.5 text-gold" strokeWidth={2.4} />
                           Important
                         </p>
                         <p className="mt-4 text-[16px] leading-[1.7] text-muted sm:text-[17px]">
@@ -203,7 +203,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                       <ButtonLink href={`/book?tour=${tour.slug}`}>
                         {isStay ? "Request these dates" : "Book this tour"}
                       </ButtonLink>
-                      <ButtonLink href="/#contact" variant="outline" className="!border-forest !text-forest hover:!bg-forest/5">
+                      <ButtonLink href="/#contact" variant="outline" className="border-forest! text-forest! hover:bg-forest/5!">
                         Contact us
                       </ButtonLink>
                     </div>
@@ -242,7 +242,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                     href={`/tours/${t.slug}`}
                     className="group flex h-full flex-col overflow-hidden rounded-[18px] border border-line bg-white shadow-[0_14px_36px_rgba(30,40,30,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(30,40,30,0.17)]"
                   >
-                    <div className="relative aspect-[408/218] overflow-hidden">
+                    <div className="relative aspect-408/218 overflow-hidden">
                       <Image
                         src={tourImage(t)}
                         alt={t.name}
@@ -250,7 +250,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                         sizes="(min-width:768px) 33vw, 100vw"
                         className="object-cover transition duration-700 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-forest/10 to-forest/35" />
+                      <div className="absolute inset-0 bg-linear-to-b from-forest/10 to-forest/35" />
                     </div>
                     <div className="flex flex-1 flex-col px-7 pb-6 pt-6">
                       <h3 className="font-serif text-[1.45rem] font-bold leading-snug text-forest">
