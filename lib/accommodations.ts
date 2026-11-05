@@ -48,7 +48,7 @@ export const STAYS: Stay[] = [
   {
     slug: "elephant-hills-hotel",
     name: "Elephant Hills Hotel",
-    image: "/images/accommodations/elephant-hills-hotel.jfif",
+    image: "/images/accommodations/elephant-hills-hotel.jpg",
     kind: "Hotel",
     stars: 4,
     displayPriceUsd: 364,
@@ -345,7 +345,7 @@ export const STAYS: Stay[] = [
   {
     slug: "victoria-falls-deluxe-suites",
     name: "The Victoria Falls Deluxe Suites",
-    image: "/images/accommodations/victoria-falls-deluxe-suites.jfif",
+    image: "/images/accommodations/victoria-falls-deluxe-suites.jpg",
     kind: "Hotel",
     stars: 5,
     displayPriceUsd: 300,
