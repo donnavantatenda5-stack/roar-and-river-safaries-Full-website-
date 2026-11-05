@@ -9,14 +9,45 @@ export default function CtaVideoBackground() {
     const video = videoRef.current;
     if (!video) return;
 
+    let active = true;
+    let started = false;
+    const startPlayback = () => {
+      if (!active || started) return;
+      started = true;
+
+      video.src = "/video/victoria-falls-activities.mp4";
+      video.load();
+      const playback = video.play();
+      playback?.catch(() => undefined);
+    };
+
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
 
-    const playback = video.play();
-    playback?.catch(() => undefined);
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          observer.disconnect();
+          startPlayback();
+        },
+        { rootMargin: "120px 0px", threshold: 0.01 },
+      );
+      observer.observe(video);
+
+      return () => {
+        active = false;
+        observer.disconnect();
+      };
+    }
+
+    startPlayback();
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
@@ -28,11 +59,9 @@ export default function CtaVideoBackground() {
       muted
       loop
       playsInline
-      preload="metadata"
+      preload="none"
       aria-hidden="true"
       tabIndex={-1}
-    >
-      <source src="/video/victoria-falls-activities.mp4" type="video/mp4" />
-    </video>
+    />
   );
 }
