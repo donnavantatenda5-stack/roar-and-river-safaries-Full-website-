@@ -3,8 +3,8 @@ import { ACTIVITY_DETAILS } from "@/lib/activityDetails";
 import { STAYS } from "@/lib/accommodations";
 import { FALLBACK_TOURS, SHORT_NAMES } from "@/lib/tours";
 import { TOUR_DETAILS, type TourDetail } from "@/lib/tourDetails";
-import { formatPrice, type Tour } from "@/lib/types";
-import { CONTACT, GOOGLE_MAPS_DIRECTIONS_URL, LOCATION, SITE } from "@/lib/site";
+import type { Tour } from "@/lib/types";
+import { CONTACT, SITE } from "@/lib/site";
 
 /* -------------------------------------------------------------------------- */
 /* Catalogue                                                                  */
@@ -388,11 +388,10 @@ export type AssistantMessage = {
 };
 
 export const ASSISTANT_SUGGESTIONS = [
-  "Where can we stay?",
+  "What can I do in Victoria Falls?",
+  "Tell me about places around the Falls",
   "What suits today's weather?",
-  "How much is the sunset cruise?",
   "Help me book",
-  "Can I get a better price?",
 ];
 
 export const isWeatherQuestion = (raw: string): boolean => {
@@ -432,6 +431,21 @@ function hasWords(text: string, words: string[]): boolean {
     const safe = w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return new RegExp(`(^|\\s)${safe}(s|es)?(\\s|$)`).test(text);
   });
+}
+
+export function isSensitiveInfoQuestion(raw: string): boolean {
+  const text = normalise(raw);
+  const asksPrice = /\b(price|pricing|cost|how much|rate|rates|fee|fees|usd|dollar|dollars)\b|\$/.test(text);
+  const asksStay = /\b(hotel|lodge|guesthouse|accommodation|places to stay|where to stay|stay|campsite|cottage)\b/.test(text);
+  const asksExactLocation =
+    /\b(address|directions?|google maps|map|exact location|meeting point|pickup|pick up|located|location)\b/.test(text) ||
+    /\bwhere (are|is|do|does|will)\b/.test(text) ||
+    /\bwhere can (i find|i do|we do)\b/.test(text) ||
+    /\bhow (do|can) i get (there|to you|to your office)\b/.test(text);
+  const asksForExactPlace =
+    asksExactLocation &&
+    !(asksStay && /\bwhere (can|should|do) (i|we) stay\b|\bwhere to stay\b/.test(text));
+  return asksPrice || asksForExactPlace;
 }
 
 /* Competitor names for "which tour" questions, longest first. */
@@ -609,9 +623,9 @@ function tourActions(tour: Tour): AssistantAction[] {
 
 function contactActions(): AssistantAction[] {
   return [
-    { label: "WhatsApp", send: "WhatsApp" },
-    { label: "Call", send: "Call" },
-    { label: "Email", send: "Email" },
+    { label: "WhatsApp", href: whatsappLink(), external: true },
+    { label: "Call +263 773 473 009", href: `tel:${CONTACT.phones[0].tel}` },
+    { label: "Email", href: `mailto:${CONTACT.email}` },
   ];
 }
 
@@ -619,28 +633,36 @@ function whatsappLink(message = "Hi! I'd like to ask about a tour with Roar and 
   return `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(message)}`;
 }
 
-function priceList(): string {
-  return FALLBACK_TOURS.map((t) => `• ${nameOf(t.slug)} — ${formatPrice(t.price_usd)}`).join("\n");
+function contactForSensitiveInfo(tour?: Tour): AssistantReply {
+  const about = tour ? ` about ${tour.name}` : "";
+  return {
+    text:
+      `For current prices or exact locations${about}, please contact our team directly. ` +
+      `Email ${CONTACT.email}, call ${CONTACT.phones.map((phone) => phone.display).join(" or ")}, or message us on WhatsApp at +263 78 604 3129.`,
+    actions: [
+      {
+        label: "WhatsApp",
+        href: whatsappLink(tour ? `Hi! I have a question about ${tour.name}.` : undefined),
+        external: true,
+      },
+      { label: "Call", href: `tel:${CONTACT.phones[0].tel}` },
+      {
+        label: "Email",
+        href: `mailto:${CONTACT.email}?subject=${encodeURIComponent("Tour enquiry — Roar and River Safaris")}`,
+      },
+    ],
+  };
 }
 
 function tourSummary(tour: Tour): AssistantReply {
   const detail = detailOf(tour.slug);
-  const priceLine =
-    tour.price_usd === null
-      ? `${tour.name} — rates on request`
-      : `${tour.name} — ${formatPrice(tour.price_usd)} per person`;
-  const lines: string[] = [priceLine];
-  if (detail?.summary || tour.description) lines.push(detail?.summary ?? tour.description ?? "");
+  const lines: string[] = [detail?.summary ?? tour.description ?? `${tour.name} is one of our experiences.`];
   if (detail) {
     const facts = [
-      detail.startTime ? `Starts: ${detail.startTime}` : "",
       detail.duration ? `Duration: ${detail.duration}` : "",
       detail.minPax ? detail.minPax : "",
     ].filter(Boolean);
     if (facts.length) lines.push(`• ${facts.join(" · ")}`);
-    if (detail.location) lines.push(`• Meets: ${detail.location}`);
-    if (detail.governmentFees) lines.push(`• Government fees: ${detail.governmentFees} (extra)`);
-    if (detail.priceNote) lines.push(`• ${detail.priceNote}`);
     if (detail.includes?.length) lines.push(`Included: ${detail.includes.slice(0, 4).join("; ")}.`);
   }
   lines.push("I can also tell you if the weather suits it, or help you book.");
@@ -652,8 +674,8 @@ function tourSummary(tour: Tour): AssistantReply {
 function staySummary(stay: Stay): AssistantReply {
   const grade = stay.stars ? `${stay.stars}-star ` : "";
   const lines = [
-    `${stay.name} — ${grade}${stay.kind.toLowerCase()} in Victoria Falls.`,
-    stay.highlight ?? "Contact our team for property details, availability and current rates.",
+    `${stay.name} — ${grade}${stay.kind.toLowerCase()}.`,
+    stay.highlight ?? "Contact our team for property details and availability.",
   ];
   if (stay.rating !== undefined && stay.reviews) {
     lines.push(`• Guest rating: ${stay.rating.toFixed(1)}/5 from ${stay.reviews} reviews`);
@@ -661,7 +683,7 @@ function staySummary(stay: Stay): AssistantReply {
   if (stay.amenities?.length) {
     lines.push(`• On site: ${stay.amenities.join(", ")}`);
   }
-  lines.push("Nightly rates move with season and room type, so the team confirms the live rate for your dates. No payment is taken online.");
+  lines.push("Contact the team for date-specific booking information.");
 
   return {
     text: lines.join("\n"),
@@ -673,15 +695,14 @@ function staySummary(stay: Stay): AssistantReply {
   };
 }
 
-function stayBookingReply(stay: Stay, title = stay.name): AssistantReply {
+function stayBookingReply(stay: Stay): AssistantReply {
   return {
     text:
-      `Rates for ${title} are quoted by our team for your exact dates, so nothing is charged online. ` +
-      "Send your dates, number of guests and room preference on the booking form, and the team will confirm availability and the rate. " +
-      "If you would rather ask first, WhatsApp is usually quickest.",
+      `Send your dates, number of guests and room preference on the booking form, and the team will confirm availability. ` +
+      "If you would rather ask first, contact the team directly.",
     actions: [
       { label: `Request ${nameOf(stay.slug)}`, href: `/book?tour=${stay.slug}` },
-      { label: "Ask on WhatsApp", href: whatsappLink(`Hi! I'd like to ask about ${title} in Victoria Falls.`), external: true },
+      ...contactActions(),
       { label: "See all accommodation", href: "/tours#activities-accommodation" },
     ],
   };
@@ -700,7 +721,7 @@ function stayRecommendation(raw: string): AssistantReply {
 
   if (wantsBudget) {
     intro =
-      "For a good-value base, Victoria Falls Backpackers Lodge has a pool, shared kitchen and airport shuttle, while N1 Hotel & Campsite and Cresta Sprayview sit in the mid-range with pools and restaurants. Shearwater Explorers Village is a relaxed option with self-catering rooms.";
+      "For a good-value stay, Victoria Falls Backpackers Lodge has a pool, shared kitchen and airport shuttle, while N1 Hotel & Campsite and Cresta Sprayview have pools and restaurants. Shearwater Explorers Village offers self-catering rooms.";
     picks = [
       { label: "Victoria Falls Backpackers Lodge", href: "/tours/victoria-falls-backpackers-lodge" },
       { label: "N1 Hotel & Campsite", href: "/tours/n1-hotel-campsite-victoria-falls" },
@@ -708,7 +729,7 @@ function stayRecommendation(raw: string): AssistantReply {
     ];
   } else if (wantsLuxury) {
     intro =
-      "For a luxury stay, The Victoria Falls Hotel is the historic five-star address, while Victoria Falls Safari Club and Ilala Lodge Hotel add a spa, pool and quieter setting. Nkosi Guest Lodge is a small five-star alternative if you prefer personal service.";
+      "For a luxury stay, The Victoria Falls Hotel is a historic five-star choice, while Victoria Falls Safari Club and Ilala Lodge Hotel offer a spa and pool. Nkosi Guest Lodge is a smaller five-star alternative with personal service.";
     picks = [
       { label: "The Victoria Falls Hotel", href: "/tours/the-victoria-falls-hotel" },
       { label: "Victoria Falls Safari Club", href: "/tours/victoria-falls-safari-club" },
@@ -716,7 +737,7 @@ function stayRecommendation(raw: string): AssistantReply {
     ];
   } else if (wantsFamily) {
     intro =
-      "For families, Zambezi Family Lodge and Lokuthula Lodges both have pools and space for children, and the Private Spacious Cottage sleeps five with two bedrooms and a kitchen setup. Ilala Lodge Hotel is also an easy walk from the Falls.";
+      "For families, Zambezi Family Lodge and Lokuthula Lodges both have pools and space for children, and the Private Spacious Cottage sleeps five with two bedrooms and a kitchen setup.";
     picks = [
       { label: "Zambezi Family Lodge", href: "/tours/zambezi-family-lodge" },
       { label: "Lokuthula Lodges", href: "/tours/lokuthula-lodges" },
@@ -732,7 +753,7 @@ function stayRecommendation(raw: string): AssistantReply {
     ];
   } else {
     intro =
-      "We list 20 places to stay, from campsites and backpackers to five-star hotels and self-catering cottages. Popular picks are Cresta Sprayview for a central mid-range stay, Ilala Lodge Hotel for walking distance to the Falls, and Batonka Guest Lodge for a quiet four-star base.";
+      "We list places to stay from campsites and backpackers to five-star hotels and self-catering cottages. Popular choices include Cresta Sprayview, Ilala Lodge Hotel and Batonka Guest Lodge.";
     picks = [
       { label: "Compare all 20 stays", href: "/tours#activities-accommodation" },
       { label: "Cresta Sprayview", href: "/tours/cresta-sprayview" },
@@ -741,9 +762,7 @@ function stayRecommendation(raw: string): AssistantReply {
   }
 
   return {
-    text:
-      `${intro}\n` +
-      "Nightly rates are not published because they change with season and room type — send your dates and group size and the team will confirm the live rate.",
+    text: intro,
     actions: picks,
   };
 }
@@ -827,7 +846,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   const tour = findTour(t);
   const when = timeOfDay(t, now);
 
-  if (!t) return { text: "Ask me anything about our tours, prices, the weather or booking." };
+  if (!t) return { text: "Ask me about Victoria Falls, destinations, activities, weather or booking." };
 
   const negotiate = /(discount|negotiat|cheaper|lower price|better price|best price|too expensive|expensive|budget|deal|student|group rate|concession|knock|reduce|afford)/.test(t);
   const asksWeather = isWeatherQuestion(t);
@@ -844,28 +863,18 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   const asksFood = /(food|meal|lunch|dinner|vegetarian|vegan|diet|drink|alcohol)/.test(t);
   const asksSafety = /(safe|safety|pregnan|disab|wheelchair|health|swim|weight)/.test(t);
   const asksAbout = /(about|who are you|local company|guide|why book|why choose|trust|experience)/.test(t);
-  const asksList = /(list|all tours|what tours|tours do you|activities do you|options|packages|things you offer)/.test(t);
-  const asksGallery = /(gallery|photos|pictures|images|see the site|website)/.test(t);
-  const asksHelp = /(what can you do|how can you help|who are you|what do you know|help)/.test(t);
-  const asksDirections =
-    /(directions?|google maps|map|address|your location|where (are|is) (you|your office)|where can i find you|where are you (based|located)|how (do|can) i get (to (you|your office|your location)|there)|how to find you|find (you|your office))/.test(
+  const asksList =
+    /(list|all tours|what tours|tours do you|activities do you|what activities|activities available|options|packages|things you offer|what can i do|things to do|what is there to do)/.test(
       t,
     );
+  const asksGallery = /(gallery|photos|pictures|images|see the site|website)/.test(t);
+  const asksHelp = /(what can you do|how can you help|who are you|what do you know|help)/.test(t);
   const asksStay =
     /(hotel|lodge|guest ?house|guesthouse|accommodation|accommodate|where (can|should|do) (i|we) (stay|sleep)|places? to stay|where to stay|to stay|stay near|stay in|staying|room|campsite|camping|backpackers|cottage|villa|self cater|self-cater|book a stay)/.test(
       t,
     );
 
-  if (asksDirections) {
-    return {
-      text:
-        `We are at ${LOCATION.address}. Use Get Directions to open the fixed location in Google Maps, or view the map in the Find us section at the bottom of this page.`,
-      actions: [
-        { label: "Get Directions", href: GOOGLE_MAPS_DIRECTIONS_URL, external: true },
-        { label: "View map on this page", href: "/#location-heading" },
-      ],
-    };
-  }
+  if (isSensitiveInfoQuestion(t)) return contactForSensitiveInfo(tour);
 
   // 1. Negotiation always goes to a human, with channel choice.
   if (negotiate) {
@@ -900,7 +909,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   }
   if (hasWords(t, ["email", "mail"])) {
     return {
-      text: "Email us at donnavantatenda5@gmail.com — include your tour, dates and group size and the team will reply with availability and the final price.",
+      text: "Email us at donnavantatenda5@gmail.com — include your tour, dates and group size and the team will reply about availability.",
       actions: [
         {
           label: "Open email",
@@ -926,28 +935,35 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   }
   if (!tour && asksStay) return stayRecommendation(t);
 
+  if (asksList) {
+    return {
+      text:
+        "There is plenty to explore: take a guided walk through the Victoria Falls rainforest and viewpoints; enjoy scenic flights, river cruises, canoeing or fishing on the Zambezi; join game drives, walking safaris and wildlife encounters; or try rafting, jet boating, bungee and gorge adventures. Cultural choices include Boma Dinner, village experiences and live theatre. You can also ask about a day trip to Chobe or activities in Livingstone.",
+      actions: [
+        { label: "See all tours & activities", href: "/tours" },
+        { label: "Where to stay", href: "/tours#activities-accommodation" },
+        { label: "Tell me about Victoria Falls", send: "Tell me about Victoria Falls" },
+      ],
+    };
+  }
+
   // 4. A specific tour or activity. Booking and explicit price questions win
   // over the words "today"/"tomorrow" so they are not answered as weather.
   if (tour) {
     if (asksBooking) {
-      const priceLine =
-        tour.price_usd === null
-          ? `${tour.name} is priced on request`
-          : `${tour.name} is ${formatPrice(tour.price_usd)} per person`;
       return {
         text:
-          `${priceLine}. Pick your date and group size on the booking form ` +
-          "and the team will confirm availability and the final price. No payment is taken online.",
+          `Pick your date and group size on the booking form and send your request. The team will follow up to confirm availability.`,
         actions: [
           { label: `Book ${nameOf(tour.slug)}`, href: `/book?tour=${tour.slug}` },
-          { label: "Ask on WhatsApp", href: whatsappLink(`Hi! I'd like to book ${tour.name}.`), external: true },
+          ...contactActions(),
         ],
       };
     }
     if (asksPayment || asksCancel) {
       return {
         text:
-          "No payment is taken on this website. Send a booking request and the team confirms availability and the final price first. " +
+          "No payment is taken on this website. Send a booking request and the team confirms availability first. " +
           "For changes or cancellations, message us with your dates and we will do our best — terms depend on the activity and season.",
         actions: [
           { label: "Open booking form", href: `/book?tour=${tour.slug}` },
@@ -955,7 +971,6 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
         ],
       };
     }
-    if (asksPrice) return tourSummary(tour);
     if (asksWeather) {
       if (weather) {
         const day = pickDay(t, weather) ?? weather.days[0];
@@ -1003,7 +1018,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
         "Booking takes about two minutes:\n" +
         "1. Open the booking form and choose your tour.\n" +
         "2. Add your date, group size and contact details.\n" +
-        "3. Send it — the team confirms availability and the final price. No payment is taken online.",
+        "3. Send it — the team will follow up to confirm availability. No payment is taken online.",
       actions: [
         { label: "Open booking form", href: "/book" },
         { label: "Book on WhatsApp", href: whatsappLink(), external: true },
@@ -1012,17 +1027,13 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
     };
   }
 
-  if (asksPrice || asksList) {
+  if (/\b(victoria falls|zambezi|chobe|livingstone|botswana)\b/.test(t)) {
     return {
       text:
-        "Prices are in USD per person. Signature tours:\n" +
-        priceList() +
-        "\n\nWe also run 40+ activities, from $17 to $286. Park and conservation fees are shown on each tour page and are payable separately. " +
-        "We list 20 places to stay too, from campsites to five-star hotels — nightly rates are quoted by the team for your dates.",
+        "Victoria Falls is known for its dramatic waterfall, rainforest viewpoints and wide choice of guided and scenic experiences. Around the region, visitors can enjoy Zambezi River cruises and canoe trips, wildlife safaris in Zambezi National Park, cultural evenings, and a Chobe day safari in Botswana. Browse the activities to find an experience that suits you.",
       actions: [
-        { label: "See all tours & activities", href: "/tours" },
-        { label: "Where to stay", href: "/tours#activities-accommodation" },
-        { label: "Help me choose", send: "What suits today's weather?" },
+        { label: "See tours & activities", href: "/tours" },
+        { label: "Explore destinations", href: "/#destinations" },
       ],
     };
   }
@@ -1030,7 +1041,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   if (asksPayment || asksCancel) {
     return {
       text:
-        "No payment is taken on this website. Send a booking request and the team confirms availability and the final price first. " +
+        "No payment is taken on this website. Send a booking request and the team confirms availability first. " +
         "For changes or cancellations, message us with your dates and we will do our best — terms depend on the activity and season.",
       actions: contactActions(),
     };
@@ -1086,7 +1097,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   if (asksDuration) {
     return {
       text:
-        "Each tour page lists the start time meeting point and duration. For example, the Victoria Falls Guided Tour takes 2–2.5 hours, the Sunset Cruise 2.5 hours, and the Chobe Day Trip about 11 hours. " +
+        "Each tour page lists the schedule and duration. For example, the Victoria Falls Guided Tour takes 2–2.5 hours, the Sunset Cruise 2.5 hours, and the Chobe Day Trip about 11 hours. " +
         "Tell me which tour you are considering and I will give you the details.",
       actions: [
         { label: "Victoria Falls Guided Tour", href: "/tours/victoria-falls-guided-tour" },
@@ -1110,7 +1121,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   if (asksAbout) {
     return {
       text:
-        "Roar and River Safaris is a local tour company based in the heart of Victoria Falls, Zimbabwe. We work with local guides and licensed operators, publish honest prices up front, and run trips from the Falls and the Zambezi into Botswana.",
+        "Roar and River Safaris is a local tour company working with local guides and licensed operators. We offer guided waterfall experiences, Zambezi River adventures, wildlife safaris, scenic trips and cultural activities, including experiences in Botswana.",
       actions: [
         { label: "About & why us", href: "/#about" },
         { label: "See all tours", href: "/tours" },
@@ -1122,11 +1133,11 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
     return {
       text:
         "I can help with:\n" +
-        "• Tours and activities, prices and what is included\n" +
+        "• Victoria Falls, destinations and what to see\n" +
+        "• Tours and activities and what each experience includes\n" +
         "• Places to stay, from campsites to five-star hotels\n" +
         "• The live Victoria Falls forecast and which activity suits it\n" +
-        "• Booking, payment and pickup questions\n" +
-        "• Putting you in touch with the team about a better price",
+        "• Booking and connecting you with our team for prices or exact locations",
       actions: [
         { label: "What suits today?", send: "What suits today's weather?" },
         { label: "Where to stay", href: "/tours#activities-accommodation" },
@@ -1138,7 +1149,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   if (/^(hi|hello|hey|good morning|good afternoon|good evening|howzit|hola)\b/.test(t)) {
     return {
       text:
-        `Hi! I'm the ${SITE.name} assistant. Ask me about any tour, today's weather and what suits it, prices or booking — or I can connect you to the team.`,
+        `Hi! I'm the ${SITE.name} assistant. Ask me about Victoria Falls, places to explore, activities and today's weather. For prices or exact locations, I can connect you with our team.`,
       actions: [
         { label: "What suits today's weather?", send: "What suits today's weather?" },
         { label: "Browse tours", href: "/tours" },
@@ -1147,7 +1158,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   }
   if (/(thank|thanks|cheers)/.test(t)) {
     return {
-      text: "You're welcome! If you need anything else — tours, weather, booking or a price chat — just ask.",
+      text: "You're welcome! Ask me about Victoria Falls, destinations, activities or weather. Our team can help with prices and exact locations.",
       actions: [{ label: "Plan my day", send: "What suits today's weather?" }],
     };
   }
@@ -1155,8 +1166,7 @@ export function answer(raw: string, weather: WeatherReport | null, now = new Dat
   // 8. Nothing matched: answer helpfully and offer a human.
   return {
     text:
-      "I'm not sure I caught that. I can help with our tours and prices, the live Victoria Falls weather and which activity suits it, booking, pickup and payments. " +
-      "For anything else, our team is one message away.",
+      "I'm not sure I caught that. I can help with Victoria Falls, destinations, activities, the live weather and booking. For prices or exact locations, please contact our team.",
     actions: [
       { label: "What suits today?", send: "What suits today's weather?" },
       { label: "See all tours", href: "/tours" },

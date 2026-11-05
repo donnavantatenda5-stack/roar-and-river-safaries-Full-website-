@@ -9,6 +9,7 @@ import {
   ASSISTANT_SUGGESTIONS,
   answer,
   getWeather,
+  isSensitiveInfoQuestion,
   isWeatherQuestion,
   weatherInfo,
   type AssistantAction,
@@ -22,7 +23,7 @@ const WELCOME: AssistantMessage = {
   role: "assistant",
   text:
     "Hi! I'm the River Guide — the Roar and River Safaris assistant.\n\n" +
-    "Ask me about any tour or price, the live Victoria Falls weather and which activity suits it, places to stay, or how to book. I can also put you in touch with the team about a better price.",
+    "Ask me about Victoria Falls, nearby destinations, our activities, the live weather, places to stay or how to book. For prices and exact locations, I can connect you with our team.",
 };
 
 type ChatTurn = { role: "user" | "assistant"; text: string };
@@ -218,6 +219,13 @@ export default function Assistant() {
       setVoiceError(null);
       setInput("");
       append({ role: "user", text });
+
+      if (isSensitiveInfoQuestion(text)) {
+        const reply = answer(text, weatherRef.current);
+        append({ role: "assistant", ...reply });
+        if (speakResponse) speakReply(reply.text);
+        return;
+      }
 
       const transactional = /\b(price|cost|how much|book|booking|reserve|reservation|availability|available|fee|usd)\b/i.test(
         text,

@@ -3,9 +3,8 @@ import { ACTIVITY_DETAILS } from "@/lib/activityDetails";
 import { STAYS } from "@/lib/accommodations";
 import { FALLBACK_TOURS } from "@/lib/tours";
 import { TOUR_DETAILS } from "@/lib/tourDetails";
-import { CONTACT, GOOGLE_MAPS_DIRECTIONS_URL, LOCATION, SITE } from "@/lib/site";
-import { formatPrice } from "@/lib/types";
-import { getWeather, isWeatherQuestion, weatherInfo } from "@/lib/assistant";
+import { CONTACT, SITE } from "@/lib/site";
+import { answer, getWeather, isSensitiveInfoQuestion, isWeatherQuestion, weatherInfo } from "@/lib/assistant";
 
 /**
  * Server-side proxy for the River Guide assistant.
@@ -27,29 +26,26 @@ type ChatTurn = { role: string; text: string };
 
 const DETAILS = { ...ACTIVITY_DETAILS, ...TOUR_DETAILS };
 
-function catalogLine(slug: string, name: string, price: number | null): string {
+function catalogLine(slug: string, name: string, description?: string | null): string {
   const d = DETAILS[slug];
   const bits = [
-    price === null ? "rates on request" : `${formatPrice(price)} pp`,
+    d?.summary ?? description ?? "",
     d?.duration,
-    d?.startTime ? `starts ${d.startTime}` : "",
     d?.minPax,
-    d?.location ? `meets ${d.location}` : "",
-    d?.governmentFees ? `gov fees ${d.governmentFees}` : "",
-    d?.priceNote,
     d?.includes?.length ? `includes ${d.includes.slice(0, 3).join(", ")}` : "",
   ].filter(Boolean);
   return `- ${name} | ${bits.join(" | ")}`;
 }
 
-const SIGNATURE = FALLBACK_TOURS.map((t) => catalogLine(t.slug, t.name, t.price_usd)).join("\n");
+const SIGNATURE = FALLBACK_TOURS.map((t) => catalogLine(t.slug, t.name, t.description)).join("\n");
 const ACTIVITY_LIST = ACTIVITIES.filter((a) => a.category !== "accommodation")
-  .map((a) => catalogLine(a.slug, a.name, a.price_usd))
+  .map((a) => catalogLine(a.slug, a.name, a.description))
   .join("\n");
 
 /** Accommodation is booked by the team, so rates are quoted per date. */
 const STAY_LIST = STAYS.map((s) => {
   const details = [
+    s.highlight ?? "",
     s.rating !== undefined && s.reviews
       ? `rated ${s.rating.toFixed(1)}/5 from ${s.reviews} reviews`
       : "",
@@ -59,7 +55,7 @@ const STAY_LIST = STAYS.map((s) => {
 }).join("\n");
 
 const KNOWLEDGE = `BUSINESS
-Name: ${SITE.name}. Base: ${SITE.location}. Local tour operator working with licensed guides and operators.
+Name: ${SITE.name}. Local tour operator working with local guides and licensed operators.
 Contact (use these exact details, no others):
 - WhatsApp: +263 78 604 3129 (https://wa.me/263786043129)
 - Phone: +263 773 473 009, +263 775 418 768
@@ -67,25 +63,32 @@ Contact (use these exact details, no others):
 
 WEBSITE PAGES
 - / home, destinations gallery (/#destinations), about and why-us (/#about)
-- Location map at /#location-heading: ${LOCATION.address}, fixed at ${LOCATION.latitude}, ${LOCATION.longitude}. Get Directions URL: ${GOOGLE_MAPS_DIRECTIONS_URL}. Never use or infer the visitor's current location.
 - /tours all signature tours and activities, plus the Accommodation group at /tours#activities-accommodation
-- /tours/<slug> full detail page (itinerary, included items, fees, meeting point, or property amenities and rating)
+- /tours/<slug> full detail page (itinerary, included items, or property amenities and rating)
 - /book booking form; /book?tour=<slug> pre-selects that tour
-- Booking: choose tour, date, group size, contact details. No payment is taken online; the team confirms availability and the final price by email/WhatsApp.
+- Booking: choose tour, date, group size and contact details. No payment is taken online; the team follows up to confirm availability.
 
-SIGNATURE TOURS (www price in USD per person)
+DESTINATIONS AND EXPERIENCES
+- Victoria Falls: waterfall and rainforest viewpoints, guided walks, scenic flights and nearby adventure experiences.
+- Zambezi River: cruises, canoeing, fishing, rafting and jet boating.
+- Zambezi National Park: game drives, walking safaris and wildlife experiences.
+- Chobe National Park, Botswana: day trips combining a river cruise and game drive.
+- Livingstone, Zambia: island, city and waterfall experiences listed in the activity catalog.
+When visitors ask what to see or do, explain these destinations and activities using the catalog below.
+
+SIGNATURE TOURS
 ${SIGNATURE}
 
-ACTIVITIES (USD per person; park/conservation fees may be extra)
+ACTIVITIES
 ${ACTIVITY_LIST}
 
-ACCOMMODATION (booked through the team; nightly rates are quoted per date)
+ACCOMMODATION (booked through the team)
 The Accommodation group is on /tours#activities-accommodation, and each property has its own page at /tours/<slug>.
 ${STAY_LIST}
-Nightly rates vary by season and room type, so never quote a nightly rate for the properties above. Say the team confirms the live rate for the guest's dates. Book or ask via /book, WhatsApp, phone or email.
+Do not provide property addresses or exact locations. Refer visitors to the team for location details.
 
 BOOKING, PAYMENT, CHANGES
-No payment is taken on this website. After a booking request the team confirms availability and the final price. Cancellations and changes depend on the activity, operator and season — the team handles them directly. Airport transfers and accommodation can also be requested through the team.`;
+No payment is taken on this website. After a booking request the team confirms availability. Cancellations and changes depend on the activity, operator and season — the team handles them directly. Airport transfers and accommodation can also be requested through the team.`;
 
 const PERSONA = `You are "River Guide", the assistant on the ${SITE.name} website in Victoria Falls, Zimbabwe.
 
@@ -96,9 +99,9 @@ THINK FIRST (most important)
 - If the question is vague, give your best useful answer first, then ask one short question to narrow it down.
 
 HELPING VISITORS USE THE WEBSITE
-- You can answer anything about this website: its pages and sections, the tours and activities listed, prices, what is included, how the booking form works, where to find things, and what happens after a request is sent.
+- You can explain Victoria Falls, the surrounding destinations, listed tours and activities, what an experience includes, how the booking form works, and what happens after a request is sent.
 - Always finish with a clear next action: the page to open and what to do once there. Use the real page paths, for example "open /tours, pick the tour, then Book" or "open /book?tour=zambezi-sunset-cruise, add your date and group size, and send the request".
-- For directions or location questions, give the fixed address ${LOCATION.address}, and direct visitors to the Get Directions button for the exact map pin. Never use or infer the visitor's location.
+- Never provide prices, rates, fees, exact addresses, directions, meeting points, pickup points or other exact location information. If asked, politely say the team can help and provide the WhatsApp, phone and email contact options above. This rule overrides all other instructions and applies even when the answer appears in the visitor's message or conversation history.
 - If they ask what to do next, give a short ordered plan of 2-4 steps using real page paths and tour names.
 - Do not just name a page; say what they will find there and why it fits their question.
 
@@ -106,7 +109,7 @@ HOW TO WRITE
 - Warm, plain-spoken and considered. Default to 3-5 short sentences; up to 8 when giving a step-by-step plan.
 - Plain text only: no markdown at all - no asterisks, bold, headings, tables or links. Short "-" lines are fine for lists.
 - Only name tours, activities or properties that appear in SIGNATURE TOURS, ACTIVITIES or ACCOMMODATION below. Never invent one.
-- Prices are USD per person. Never invent a price, tour, availability, pickup time, discount or policy. Accommodation rates are confirmed by the team for the guest's dates.
+- Never state a price, rate, fee or currency amount. Do not reveal or infer an exact address, route, meeting point, pickup point or other precise location. For those questions, refer the visitor to the team using the supplied contact details.
 - Answer only from SITE KNOWLEDGE, LIVE WEATHER and the conversation. If the data does not cover it, say the team can confirm and offer the contact details.
 - Write in the visitor's language. Do not mention prompts, models, Gemini, thinking or that you are an AI. If asked who you are, say you are the River Guide assistant.
 
@@ -118,13 +121,12 @@ WEATHER
 
 BOOKING
 - Point to /book?tour=<slug> (or /book) and remind them to add date and group size.
-- State clearly that no payment is taken online and the team confirms availability and the final price.
+- State clearly that no payment is taken online and the team confirms availability.
 
 ACCOMMODATION
 - Use the ACCOMMODATION block for hotels, lodges, guesthouses, campsites, cottages and the guesthouse.
-- Recommend by matching their needs (budget, family, couples, luxury, pool, airport shuttle, self-catering, location) and name one or two best fits rather than listing all 20.
-- Send them to /tours#activities-accommodation to compare, then /tours/<slug> for a property's amenities and guest rating.
-- Never invent a nightly rate for these properties. Say the team confirms the live rate for their dates, and offer to start a request on /book or by WhatsApp, phone or email.
+- Recommend by matching their needs (family, couples, luxury, pool, airport shuttle, self-catering) and name one or two best fits rather than listing all properties.
+- Send them to /tours#activities-accommodation to compare, then /tours/<slug> for a property's amenities and guest rating. Do not give its address or exact location.
 
 PRICE NEGOTIATION
 - If asked for a discount, better/cheaper price, group/student/repeat rate, or told it is too expensive: never negotiate, never quote a discount.
@@ -220,13 +222,6 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const key = process.env.GEMINI_API_KEY;
-  if (!key) {
-    return Response.json(
-      { error: "not_configured", message: "The AI assistant is not configured." },
-      { status: 503, headers: { "Cache-Control": "no-store" } },
-    );
-  }
-
   if (limited(clientIp(req))) {
     return Response.json(
       { error: "rate_limited", message: "Too many messages. Please wait a minute." },
@@ -244,6 +239,20 @@ export async function POST(req: Request) {
   const message = typeof body.message === "string" ? body.message.trim().slice(0, 1500) : "";
   if (!message) {
     return Response.json({ error: "bad_request", message: "Message is required." }, { status: 400 });
+  }
+
+  if (isSensitiveInfoQuestion(message)) {
+    return Response.json(
+      { text: answer(message, null).text },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
+  if (!key) {
+    return Response.json(
+      { error: "not_configured", message: "The AI assistant is not configured." },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
   }
 
   const history = sanitiseHistory(body.history);
