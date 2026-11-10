@@ -125,7 +125,7 @@ const RAW: {
   { slug: "falls-tour-zam", name: "Falls Tour (Zambia)", price: 75, category: "scenic" },
   { slug: "big-tree-visit", name: "Big Tree Visit", price: 40, category: "scenic" },
   { slug: "quad-bikes", name: "Quad Bikes", price: 72, category: "scenic" },
-  { slug: "airport-transfer", name: "Airport Transfer", price: 17, category: "scenic" },
+  { slug: "airport-transfer", name: "Airport Transfer", price: 40, category: "scenic" },
   { slug: "airport-transfer-livingstone", name: "Airport Transfer (Livingstone Airport)", price: 30, category: "scenic" },
 
   // Cultural

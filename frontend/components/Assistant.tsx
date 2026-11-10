@@ -426,7 +426,7 @@ export default function Assistant() {
                 ) : weather ? (
                   <>
                     <span aria-hidden="true" className="text-base leading-none">
-                      {weatherInfo(weather.current.code).emoji}
+                      <WeatherSymbol code={weather.current.code} />
                     </span>
                     <span className="min-w-0 flex-1 truncate">
                       Victoria Falls · {weather.current.temp}°C · {weatherInfo(weather.current.code).label} ·{" "}
@@ -710,7 +710,7 @@ function WeatherCard({ weather }: { weather: WeatherReport }) {
             >
               <p className="text-[9.5px] font-bold uppercase tracking-wide text-muted">{label}</p>
               <p className="text-[15px] leading-tight" aria-hidden="true">
-                {info.emoji}
+                <WeatherSymbol code={d.code} />
               </p>
               <p className="text-[11.5px] font-bold text-forest">{d.max}°</p>
               <p className="text-[9.5px] text-muted">{d.rain}%</p>
@@ -722,5 +722,21 @@ function WeatherCard({ weather }: { weather: WeatherReport }) {
         5-day forecast, updated {updated} · Open-Meteo
       </p>
     </div>
+  );
+}
+
+function WeatherSymbol({ code }: { code: number }) {
+  if (code !== 0) return weatherInfo(code).emoji;
+
+  return (
+    <span className="inline-flex h-4 w-4 overflow-hidden rounded-full align-[-3px]">
+      <Image
+        src="/images/weather/sunny-circle.png"
+        alt=""
+        width={32}
+        height={32}
+        className="h-full w-full object-cover"
+      />
+    </span>
   );
 }
