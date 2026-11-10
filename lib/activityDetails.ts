@@ -639,6 +639,94 @@ const ACTIVITY_CONTENT: Record<string, TourDetail> = {
     notes: ["Minimum 2 guests", "Minimum age 12", "Riders should be comfortable on a bicycle"],
   },
 
+  "falls-tour-zam": {
+    summary: "A guided walk on the Zambian side of the Falls, from the Knife-Edge Bridge to the Boiling Pot and Danger Point.",
+    startTime: "Morning departures",
+    duration: "Half day",
+    minPax: "Min pax: 2",
+    location: "Livingstone, Zambia",
+    body: [
+      "The Zambian side of Victoria Falls is reached from Livingstone, and it puts you on the lip of the waterfall rather than across the gorge from it. A guided walk links the viewpoints and trails that make this side worth the border crossing.",
+      "Knife-Edge Bridge: the walk out onto the bridge gives you close-up, dramatic viewpoints right beside the roaring cascades, with drenching mist rolling over the path. It is the wettest and most immersive way to stand next to the Falls.",
+      "Boiling Pot and Danger Point: trails and vantage points look straight down into the deep gorge where the Zambezi River turns sharply after the Falls. The Boiling Pot is the churning pool at the bottom, and Danger Point is the exposed lookout above it.",
+      "Livingstone Island and Devil's Pool: the island sits at the lip of the waterfall, and Devil's Pool is the famous rock pool beside it. Both are seasonal swimming spots, open only during the low-water months, and are visited on a separate Livingstone Island departure rather than the standard walk.",
+      "Aerial views: helicopter and microlight flights depart from Livingstone and give full panoramas of the 1,708-metre-wide sheet of water and the zig-zagging Batoka gorges. They are booked as separate flights and can be added to the same day.",
+    ],
+    includes: [
+      "English-speaking local guide",
+      "Guided walk to the Knife-Edge Bridge, Boiling Pot and Danger Point",
+      "Return transfers from Livingstone accommodation",
+    ],
+    governmentFees: "Zambia national park entry is payable on top of the listed price",
+    priceNote:
+      "Livingstone Island and Devil's Pool are booked separately and run in the low-water season only.",
+    notes: [
+      "Passport required for the Zambian border crossing",
+      "Wear shoes with grip; the trails to the Boiling Pot are steep and slippery",
+      "Water levels change the viewpoints and the amount of spray, but the walk runs in high water too",
+    ],
+    important:
+      "Devil's Pool is only open in the low-water months, typically between August and January, and is not included in the standard Falls walk. Helicopter and microlight flights are separate activities booked alongside the tour.",
+  },
+
+  "airport-transfer": {
+    summary: "Pre-booked transfers between Victoria Falls Airport (VFA) and your hotel, lodge or the Falls.",
+    startTime: "On arrival, any flight time",
+    duration: "About 20 to 30 minutes",
+    minPax: "",
+    location: "Victoria Falls Airport (VFA), Zimbabwe",
+    body: [
+      "Victoria Falls Airport sits about 20 to 30 minutes from the town and the Falls, and a pre-booked transfer is the simplest way to arrive. The driver meets you at arrivals and takes you straight to your accommodation, with no queue at the taxi rank.",
+      "On-demand airport taxis typically run between $25 and $40 (cash only). Pre-booking fixes the price before you land and means you are not relying on finding a taxi or carrying enough cash on arrival.",
+      "Return transfers and pickups for early flights can be arranged at the same time, so the whole trip is covered.",
+    ],
+    includes: [
+      "Meet and greet at Victoria Falls Airport arrivals",
+      "One-way transfer in an air-conditioned vehicle",
+      "Luggage assistance",
+      "Flight tracking so the driver is there if you are delayed",
+    ],
+    priceNote:
+      "On-demand airport taxis typically run between $25 and $40 (cash only). Pre-booking fixes your price.",
+    notes: [
+      "Send your flight number and arrival time when you book",
+      "Return and early-morning transfers can be arranged",
+      "Ask the team for a confirmed quote for your hotel and group size",
+    ],
+    important:
+      "On-demand airport taxis typically run between $25 and $40 and accept cash only. A pre-booked transfer avoids the cash requirement and confirms your price in advance.",
+  },
+
+  "airport-transfer-livingstone": {
+    summary: "Pre-booked transfers from Livingstone Airport to Livingstone, Victoria Falls and Kasane.",
+    startTime: "On arrival, any flight time",
+    duration: "15 minutes to 2 hours, depending on route",
+    minPax: "",
+    location: "Harry Mwanga Nkumbula International Airport, Livingstone",
+    body: [
+      "Livingstone Airport (LVI), also called Harry Mwanga Nkumbula International, is the Zambian gateway to Victoria Falls. A pre-booked transfer meets you at arrivals and drives you to your hotel, town or onward destination, so there is no need to negotiate a taxi on the day.",
+      "Livingstone Airport to Livingstone hotels and town: 15 to 30 minutes, starting around $15 to $20 USD per person.",
+      "Livingstone Airport to Victoria Falls (Zimbabwe side): 45 minutes to 1 hour including the border crossing, starting around $20 to $30 USD per person.",
+      "Livingstone Airport to Victoria Falls Airport (VFA): 1 to 1.5 hours, starting around $30 to $75+ USD depending on the vehicle and group size.",
+      "Livingstone Airport to Kasane (Botswana): 1.5 to 2 hours, starting around $60+ USD per person.",
+    ],
+    includes: [
+      "Meet and greet at Livingstone Airport arrivals",
+      "One-way transfer in an air-conditioned vehicle",
+      "Luggage assistance",
+      "Border assistance on cross-border routes",
+    ],
+    priceNote:
+      "Prices are per-person estimates and vary with vehicle type, group size and season. Private vehicle and return rates are available on request.",
+    notes: [
+      "Send your flight number and arrival time when you book so the driver can track the flight",
+      "Zimbabwe and Botswana border crossings can add time at busy periods",
+      "Ask the team for a confirmed quote for your route and group size",
+    ],
+    important:
+      "Cross-border transfers pass through immigration. Bring a valid passport and check visa requirements for Zambia, Zimbabwe and Botswana in advance. Border and visa fees are not included in the transfer price.",
+  },
+
   "boma-dinner": {
     summary: "A traditional dinner with drums and dance around a fire in the bush.",
     startTime: "19:00",
