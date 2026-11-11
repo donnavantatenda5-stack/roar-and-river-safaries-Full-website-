@@ -4,7 +4,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, CloudSun, Compass, LoaderCircle, Mic, MicOff, X } from "lucide-react";
+import {
+  ArrowUp,
+  ChevronDown,
+  ChevronUp,
+  CloudSun,
+  Compass,
+  LoaderCircle,
+  Mic,
+  MicOff,
+  X,
+} from "lucide-react";
 import {
   ASSISTANT_SUGGESTIONS,
   answer,
@@ -108,6 +118,7 @@ export default function Assistant() {
   const [input, setInput] = useState("");
   const [weather, setWeather] = useState<WeatherReport | null>(null);
   const [loadingWeather, setLoadingWeather] = useState(false);
+  const [weatherExpanded, setWeatherExpanded] = useState(false);
   const [typing, setTyping] = useState(false);
   const [listening, setListening] = useState(false);
   const [voiceDraftReady, setVoiceDraftReady] = useState(false);
@@ -413,35 +424,56 @@ export default function Assistant() {
               </div>
 
               {/* Live weather strip */}
-              <button
-                type="button"
-                onClick={() => void handleSend("What suits today's weather?")}
-                className="mt-3 flex w-full items-center gap-2 rounded-full bg-white/10 px-3.5 py-2 text-left text-[12.5px] text-[#e4ede3] transition-colors hover:bg-white/15"
-              >
-                {loadingWeather ? (
-                  <>
-                    <LoaderCircle className="h-4 w-4 animate-spin text-sand" />
-                    Checking the Victoria Falls forecast…
-                  </>
-                ) : weather ? (
-                  <>
-                    <span aria-hidden="true" className="text-base leading-none">
-                      <WeatherSymbol code={weather.current.code} />
-                    </span>
-                    <span className="min-w-0 flex-1 truncate">
-                      Victoria Falls · {weather.current.temp}°C · {weatherInfo(weather.current.code).label} ·{" "}
-                      {weather.days[0]?.rain ?? 0}% rain
-                    </span>
-                    <span className="shrink-0 font-bold text-sand">What suits?</span>
-                  </>
-                ) : (
-                  <>
-                    <CloudSun className="h-4 w-4 text-sand" />
-                    <span className="min-w-0 flex-1 truncate">Live forecast unavailable</span>
-                    <span className="shrink-0 font-bold text-sand">Retry</span>
-                  </>
+              <div className="mt-3 flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-expanded={weatherExpanded}
+                  aria-label={weather ? "Show weather forecast" : "Retry loading weather forecast"}
+                  onClick={() => {
+                    if (weather) setWeatherExpanded((expanded) => !expanded);
+                    else void loadWeather(true);
+                  }}
+                  className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-white/10 px-3.5 py-2 text-left text-[12.5px] text-[#e4ede3] transition-colors hover:bg-white/15"
+                >
+                  {loadingWeather ? (
+                    <>
+                      <LoaderCircle className="h-4 w-4 shrink-0 animate-spin text-sand" />
+                      <span className="truncate">Checking the Victoria Falls forecast…</span>
+                    </>
+                  ) : weather ? (
+                    <>
+                      <span aria-hidden="true" className="text-base leading-none">
+                        <WeatherSymbol code={weather.current.code} size="large" />
+                      </span>
+                      <span className="min-w-0 flex-1 truncate">
+                        Victoria Falls · {weather.current.temp}°C · {weatherInfo(weather.current.code).label} ·{" "}
+                        {weather.days[0]?.rain ?? 0}% rain
+                      </span>
+                      {weatherExpanded ? (
+                        <ChevronUp className="h-4 w-4 shrink-0 text-sand" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 shrink-0 text-sand" />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <CloudSun className="h-4 w-4 shrink-0 text-sand" />
+                      <span className="min-w-0 flex-1 truncate">Live forecast unavailable</span>
+                      <span className="shrink-0 font-bold text-sand">Retry</span>
+                    </>
+                  )}
+                </button>
+                {weather && (
+                  <button
+                    type="button"
+                    onClick={() => void handleSend("What suits today's weather?")}
+                    className="shrink-0 rounded-full bg-gold px-3 py-2 text-[11px] font-bold text-forest transition-colors hover:bg-sand"
+                  >
+                    What suits?
+                  </button>
                 )}
-              </button>
+              </div>
+              {weather && weatherExpanded && <WeatherDashboard weather={weather} />}
             </div>
 
             {/* Transcript */}
@@ -725,16 +757,170 @@ function WeatherCard({ weather }: { weather: WeatherReport }) {
   );
 }
 
-function WeatherSymbol({ code }: { code: number }) {
-  if (code !== 0) return weatherInfo(code).emoji;
+type WeatherMetric = "temperature" | "rain" | "wind";
+
+function WeatherDashboard({ weather }: { weather: WeatherReport }) {
+  const [metric, setMetric] = useState<WeatherMetric>("temperature");
+  const days = weather.days.slice(0, 5);
+  const values = days.map((day) => {
+    if (metric === "rain") return day.rain;
+    if (metric === "wind") return day.wind;
+    return day.max;
+  });
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const range = maxValue - minValue || 1;
+  const points = values.map((value, index) => ({
+    x: days.length < 2 ? 180 : 10 + (index * 340) / (days.length - 1),
+    y: 76 - ((value - minValue) / range) * 44,
+  }));
+  const line = points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x},${point.y}`).join(" ");
+  const area = `${line} L${points[points.length - 1]?.x ?? 350},92 L${points[0]?.x ?? 10},92 Z`;
+  const metricLabel = metric === "temperature" ? "°" : metric === "rain" ? "%" : " km/h";
+  const updated = new Date(weather.fetchedAt).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const metrics: { id: WeatherMetric; label: string }[] = [
+    { id: "temperature", label: "Temperature" },
+    { id: "rain", label: "Precipitation" },
+    { id: "wind", label: "Wind" },
+  ];
 
   return (
-    <span className="inline-flex h-4 w-4 overflow-hidden rounded-full align-[-3px]">
+    <section
+      aria-label="Victoria Falls weather forecast"
+      className="mt-2 overflow-hidden rounded-2xl border border-white/10 bg-[#202329] p-3 text-white shadow-lg"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span aria-hidden="true" className="text-[30px] leading-none">
+            <WeatherSymbol code={weather.current.code} size="large" />
+          </span>
+          <div>
+            <p className="text-[11px] font-semibold text-white/65">Victoria Falls</p>
+            <p className="flex items-start font-medium leading-none">
+              <span className="text-[35px] tracking-tight">{weather.current.temp}</span>
+              <span className="mt-1 text-[13px]">°C</span>
+            </p>
+          </div>
+          <div className="border-l border-white/15 pl-2.5 text-[9px] leading-[1.55] text-white/70">
+            <p>Feels like: {weather.current.feels}°</p>
+            <p>Rain chance: {days[0]?.rain ?? 0}%</p>
+            <p>Wind: {weather.current.wind} km/h</p>
+          </div>
+        </div>
+        <div className="pt-1 text-right">
+          <p className="text-[12px] font-semibold">Weather</p>
+          <p className="text-[10px] text-white/65">{weatherInfo(weather.current.code).label}</p>
+          <p className="text-[9px] text-white/45">Updated {updated}</p>
+        </div>
+      </div>
+
+      <div className="mt-2 flex border-b border-white/15" role="tablist" aria-label="Forecast chart">
+        {metrics.map((item) => (
+          <button
+            key={item.id}
+            id={`weather-tab-${item.id}`}
+            type="button"
+            role="tab"
+            aria-selected={metric === item.id}
+            aria-controls="weather-chart"
+            onClick={() => setMetric(item.id)}
+            className={cn(
+              "border-b-2 px-2 py-1.5 text-[9px] transition-colors",
+              metric === item.id
+                ? "border-[#f2bd38] font-semibold text-white"
+                : "border-transparent text-white/60 hover:text-white",
+            )}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      {days.length > 0 && (
+        <>
+          <div
+            id="weather-chart"
+            role="tabpanel"
+            aria-labelledby={`weather-tab-${metric}`}
+            className="relative mt-1 h-[88px]"
+          >
+            <svg
+              viewBox="0 0 360 100"
+              preserveAspectRatio="none"
+              className="h-full w-full"
+              role="img"
+              aria-label={`${metrics.find((item) => item.id === metric)?.label} forecast for the next ${days.length} days`}
+            >
+              {[34, 62, 92].map((y) => (
+                <line key={y} x1="0" x2="360" y1={y} y2={y} stroke="white" strokeOpacity="0.1" />
+              ))}
+              <path d={area} fill="#e4b437" fillOpacity="0.2" />
+              <path d={line} fill="none" stroke="#f2bd38" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+              {points.map((point, index) => (
+                <g key={days[index]?.date}>
+                  <circle cx={point.x} cy={point.y} r="2.5" fill="#f2bd38" />
+                  <text
+                    x={point.x}
+                    y={Math.max(14, point.y - 7)}
+                    fill="white"
+                    fontSize="8"
+                    textAnchor="middle"
+                  >
+                    {values[index]}
+                    {metricLabel}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          </div>
+
+          <div className="flex gap-1">
+            {days.map((day) => {
+              const label = new Date(`${day.date}T12:00:00`).toLocaleDateString("en-GB", {
+                weekday: "short",
+              });
+              return (
+                <div
+                  key={day.date}
+                  className="min-w-0 flex-1 rounded-lg bg-white/[0.07] px-1 py-1.5 text-center"
+                  title={`${label}: ${weatherInfo(day.code).label}, ${day.min}–${day.max}°C, ${day.rain}% rain`}
+                >
+                  <p className="text-[9px] font-semibold text-white/75">{label}</p>
+                  <p className="my-0.5 text-[15px] leading-none" aria-hidden="true">
+                    <WeatherSymbol code={day.code} />
+                  </p>
+                  <p className="whitespace-nowrap text-[8px] text-white/80">
+                    {day.max}° <span className="text-white/45">{day.min}°</span>
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+      <p className="mt-1.5 text-[8px] text-white/40">Daily forecast · Open-Meteo</p>
+    </section>
+  );
+}
+
+function WeatherSymbol({ code, size = "small" }: { code: number; size?: "small" | "large" }) {
+  if (code > 1) return weatherInfo(code).emoji;
+
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 overflow-hidden rounded-full align-[-3px]",
+        size === "large" ? "h-7 w-7" : "h-4 w-4",
+      )}
+    >
       <Image
-        src="/images/weather/sunny-circle.png"
+        src="/images/weather/sunny-sky.jpg"
         alt=""
-        width={32}
-        height={32}
+        width={64}
+        height={64}
         className="h-full w-full object-cover"
       />
     </span>
